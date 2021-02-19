@@ -1,5 +1,6 @@
 package com;
 
+import CMPC3M06.AudioPlayer;
 import CMPC3M06.AudioRecorder;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -16,6 +17,16 @@ public class Sender implements Runnable{
     private final InetAddress IP;
     private final DatagramSocket SENDER_SOCKET;
     private final AudioRecorder RECORDER;
+
+    private static AudioPlayer PLAYER;
+
+    static {
+        try {
+            PLAYER = new AudioPlayer();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     /**
@@ -108,6 +119,7 @@ public class Sender implements Runnable{
     public byte[] record(){
         try {
             byte[] block = RECORDER.getBlock();
+            //PLAYER.playBlock(block);
             return block;
         } catch (IOException e) {
             System.out.println("Failed to recoded block...");
