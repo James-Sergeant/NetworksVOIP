@@ -24,14 +24,14 @@ public class Receiver implements Runnable{
      * @throws SocketException
      */
     public Receiver() throws LineUnavailableException, SocketException {
-        this.PLAYER = new AudioPlayer();
-        this.SOCKET = new DatagramSocket();
         this.PORT = 55555;
+        this.PLAYER = new AudioPlayer();
+        this.SOCKET = new DatagramSocket(this.PORT);
     }
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
-        this.PLAYER = new AudioPlayer();
-        this.SOCKET = new DatagramSocket();
         this.PORT = PORT;
+        this.PLAYER = new AudioPlayer();
+        this.SOCKET = new DatagramSocket(this.PORT);
     }
 
     public void toggleReceiving(){
@@ -41,24 +41,47 @@ public class Receiver implements Runnable{
 
     @Override
     public void run() {
-        playAudio(getPacket());
+        if(receiving){
+            try {
+                throw new AlreadyReceivingException();
+            } catch (AlreadyReceivingException e) {
+                System.out.println(e);
+            }
+        }
+        
+        toggleReceiving();
+        while (receiving){
+            System.out.println("Running Receiver...");
+            playAudio(getPacket());
+        }
     }
+
     private byte[] getPacket(){
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
             SOCKET.receive(packet);
+            System.out.println("Packed Received");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error getting received packet");
         }
         return buffer;
     }
+
     private void playAudio(byte[] block){
         try {
             PLAYER.playBlock(block);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error playing audio");
+        }
+    }
+    /**
+     * Is thrown if audio is already receiving.
+     */
+    class AlreadyReceivingException extends Exception{
+        AlreadyReceivingException(){
+            super("Audio already sending");
         }
     }
 }
