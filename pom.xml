@@ -7,6 +7,13 @@
     <groupId>org.example</groupId>
     <artifactId>NetworksVOIP</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>15</maven.compiler.source>
