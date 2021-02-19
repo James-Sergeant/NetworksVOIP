@@ -25,13 +25,13 @@ public class Receiver implements Runnable{
      */
     public Receiver() throws LineUnavailableException, SocketException {
         this.PLAYER = new AudioPlayer();
-        this.SOCKET = new DatagramSocket();
         this.PORT = 55555;
+        this.SOCKET = new DatagramSocket(this.PORT);
     }
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
         this.PLAYER = new AudioPlayer();
-        this.SOCKET = new DatagramSocket();
         this.PORT = PORT;
+        this.SOCKET = new DatagramSocket(this.PORT);
     }
 
     public void toggleReceiving(){
@@ -43,8 +43,9 @@ public class Receiver implements Runnable{
     public void run() {
         playAudio(getPacket());
     }
+
     private byte[] getPacket(){
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[512];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
@@ -52,8 +53,10 @@ public class Receiver implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return buffer;
     }
+
     private void playAudio(byte[] block){
         try {
             PLAYER.playBlock(block);
