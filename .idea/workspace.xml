@@ -30,7 +30,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/AudioLib.jar" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -49,6 +49,7 @@
       <option name="presentableId" value="Default" />
       <updated>1613730094116</updated>
       <workItem from="1613730095881" duration="294000" />
+      <workItem from="1613730447947" duration="801000" />
     </task>
     <servers />
   </component>
