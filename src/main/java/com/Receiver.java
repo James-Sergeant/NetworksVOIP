@@ -41,7 +41,9 @@ public class Receiver implements Runnable{
 
     @Override
     public void run() {
-        playAudio(getPacket());
+        while (true) {
+            playAudio(getPacket());
+        }
     }
 
     private byte[] getPacket(){
@@ -50,6 +52,7 @@ public class Receiver implements Runnable{
 
         try {
             SOCKET.receive(packet);
+            System.out.println("Receive");
             Analyzer.logPacket(packet);
         } catch (IOException e) {
             e.printStackTrace();
