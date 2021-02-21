@@ -104,8 +104,7 @@ public class Sender implements Runnable{
 
             try {
                 SENDER_SOCKET.send(packet);
-                System.out.println(packet.getPort());
-                System.out.println("Packet Sent");
+                Analyzer.logPacket(packet);
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }

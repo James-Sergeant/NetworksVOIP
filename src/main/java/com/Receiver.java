@@ -50,6 +50,7 @@ public class Receiver implements Runnable{
 
         try {
             SOCKET.receive(packet);
+            Analyzer.logPacket(packet);
         } catch (IOException e) {
             e.printStackTrace();
         }
