@@ -2,7 +2,6 @@ package com;
 
 import CMPC3M06.AudioPlayer;
 import CMPC3M06.AudioRecorder;
-import org.checkerframework.checker.units.qual.A;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -105,6 +104,8 @@ public class Sender implements Runnable{
 
             try {
                 SENDER_SOCKET.send(packet);
+                //System.out.println("Send");
+                //Analyzer.logPacket(packet);
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }

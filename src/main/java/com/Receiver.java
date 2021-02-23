@@ -24,13 +24,13 @@ public class Receiver implements Runnable{
      * @throws SocketException
      */
     public Receiver() throws LineUnavailableException, SocketException {
-        this.PORT = 55555;
         this.PLAYER = new AudioPlayer();
+        this.PORT = 55555;
         this.SOCKET = new DatagramSocket(this.PORT);
     }
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
-        this.PORT = PORT;
         this.PLAYER = new AudioPlayer();
+        this.PORT = PORT;
         this.SOCKET = new DatagramSocket(this.PORT);
     }
 
@@ -41,31 +41,23 @@ public class Receiver implements Runnable{
 
     @Override
     public void run() {
-        if(receiving){
-            try {
-                throw new AlreadyReceivingException();
-            } catch (AlreadyReceivingException e) {
-                System.out.println(e);
-            }
-        }
-
-        toggleReceiving();
-        while (receiving){
-            System.out.println("Running Receiver...");
+        while (true) {
             playAudio(getPacket());
         }
     }
 
     private byte[] getPacket(){
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[512];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
             SOCKET.receive(packet);
-            System.out.println("Packed Received");
+            System.out.println("Receive");
+            Analyzer.logPacket(packet);
         } catch (IOException e) {
-            System.out.println("Error getting received packet");
+            e.printStackTrace();
         }
+
         return buffer;
     }
 
@@ -73,15 +65,7 @@ public class Receiver implements Runnable{
         try {
             PLAYER.playBlock(block);
         } catch (IOException e) {
-            System.out.println("Error playing audio");
-        }
-    }
-    /**
-     * Is thrown if audio is already receiving.
-     */
-    class AlreadyReceivingException extends Exception{
-        AlreadyReceivingException(){
-            super("Audio already sending");
+            e.printStackTrace();
         }
     }
 }
