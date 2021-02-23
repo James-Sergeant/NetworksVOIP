@@ -7,16 +7,18 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Vector;
 
 public class Receiver implements Runnable{
     public static byte DATAGRAM_SOCKET_ONE = 0;
     public static byte DATAGRAM_SOCKET_TWO = 1;
     public static byte DATAGRAM_SOCKET_THREE = 2;
 
-    public final AudioPlayer PLAYER;
-    public final DatagramSocket SOCKET;
-    public final int PORT;
-    public boolean receiving = false;
+    private final AudioPlayer PLAYER;
+    private final DatagramSocket SOCKET;
+    private final int PORT;
+    private boolean receiving = false;
+    private int packetsReceived = 0;
 
     /**
      * The basic receiver
@@ -41,14 +43,19 @@ public class Receiver implements Runnable{
 
     @Override
     public void run() {
-        while (true) {
-            playAudio(getPacket());
+        toggleReceiving();
+        while (receiving) {
+            play();
         }
     }
 
+    private void play(){
+        playBuffer(buffer());
+    }
+
     private byte[] getPacket(){
-        byte[] buffer = new byte[512];
-        DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
+        byte[] body = new byte[512];
+        DatagramPacket packet = new DatagramPacket(body,0,body.length);
 
         try {
             SOCKET.receive(packet);
@@ -58,14 +65,24 @@ public class Receiver implements Runnable{
             e.printStackTrace();
         }
 
+        return body;
+    }
+
+    private Vector<byte[]> buffer(){
+        Vector<byte[]> buffer = new Vector<>();
+        for(int i = 0; i < 32; i++){
+            buffer.add(getPacket());
+        }
         return buffer;
     }
 
-    private void playAudio(byte[] block){
-        try {
-            PLAYER.playBlock(block);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void playBuffer(Vector<byte[]> buffer){
+        for (byte[] frame:buffer) {
+            try {
+                PLAYER.playBlock(frame);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
