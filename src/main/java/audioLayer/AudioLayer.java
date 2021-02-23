@@ -11,7 +11,7 @@ public class AudioLayer extends Layer {
     @Override
     public byte[] addHeader(byte[] payload) {
         header = AudioUtils.record();
-        return super.addHeader(payload);
+        return addHeader(header, payload);
     }
 
     @Override

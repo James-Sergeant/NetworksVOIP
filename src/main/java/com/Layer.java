@@ -18,6 +18,17 @@ public abstract class Layer {
         return newPayload;
     }
 
+    protected byte[] addHeader(byte[] header, byte[] payload){
+        // Create new byte array
+        byte[] newPayload = new byte[payload.length + header.length];
+
+        // Prepend Audio data to the payload
+        System.arraycopy(header, 0, newPayload, 0, header.length);
+        System.arraycopy(payload, 0, newPayload, header.length, payload.length);
+
+        return newPayload;
+    }
+
     public byte[] removeHeader(byte[] payload){
         // Create new byte array
         byte[] newPayload = new byte[payload.length - header.length];
