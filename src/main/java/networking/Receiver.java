@@ -1,6 +1,8 @@
-package com;
+package networking;
 
 import CMPC3M06.AudioPlayer;
+import audio.AudioUtils;
+import com.Analyzer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -83,7 +85,7 @@ public class Receiver implements Runnable{
     private void playBuffer(Vector<byte[]> buffer){
         for (byte[] frame:buffer) {
             try {
-                PLAYER.playBlock(frame);
+                AudioUtils.playBlock(frame);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,7 +1,9 @@
-package com;
+package networking;
 
 import CMPC3M06.AudioPlayer;
 import CMPC3M06.AudioRecorder;
+import audio.AudioUtils;
+import com.Analyzer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -16,17 +18,6 @@ public class Sender implements Runnable{
     private final int PORT;
     private final InetAddress IP;
     private final DatagramSocket SENDER_SOCKET;
-    private final AudioRecorder RECORDER;
-
-    private static AudioPlayer PLAYER;
-
-    static {
-        try {
-            PLAYER = new AudioPlayer();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     /**
@@ -39,7 +30,6 @@ public class Sender implements Runnable{
         PORT = 55555;
         IP = InetAddress.getByName("localhost");
         SENDER_SOCKET = new DatagramSocket();
-        RECORDER = new AudioRecorder();
     }
 
     /**
@@ -53,7 +43,6 @@ public class Sender implements Runnable{
         PORT = 55555;
         this.IP = InetAddress.getByName(IP);
         SENDER_SOCKET = new DatagramSocket();
-        RECORDER = new AudioRecorder();
     }
 
     /**
@@ -68,7 +57,6 @@ public class Sender implements Runnable{
         this.PORT = PORT;
         this.IP = InetAddress.getByName(IP);
         SENDER_SOCKET = new DatagramSocket();
-        RECORDER = new AudioRecorder();
     }
 
     /**
@@ -114,7 +102,7 @@ public class Sender implements Runnable{
 
         byte[] analyzerHeader = Analyzer.getHeader();
 
-        byte[] body = record();
+        byte[] body = AudioUtils.record();
 
         System.arraycopy(analyzerHeader, 0, payload, 0,analyzerHeader.length);
         System.arraycopy(body, 0, payload, Analyzer.HEADER_LENGTH, body.length);
@@ -122,20 +110,6 @@ public class Sender implements Runnable{
         return new DatagramPacket(payload, payload.length,IP,PORT);
     }
 
-    /**
-     * Records the users audio.
-     * @return byte[] if users audio data.
-     */
-    public byte[] record(){
-        try {
-            byte[] block = RECORDER.getBlock();
-            //PLAYER.playBlock(block);
-            return block;
-        } catch (IOException e) {
-            System.out.println("Failed to recoded block...");
-            return new byte[0];
-        }
-    }
 
     /**
      * Is thrown if audio is already transmitting.

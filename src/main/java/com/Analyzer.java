@@ -100,7 +100,8 @@ public class Analyzer {
         File file = new File(logDirectory+"Test_LOG.txt");
 
         // Create file if not already exists
-        if (!file.exists()) {
+        if(!file.exists()){
+            file.getParentFile().mkdirs();
             file.createNewFile();
         }
 
