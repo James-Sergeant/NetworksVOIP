@@ -48,7 +48,7 @@ public class Receiver implements Runnable{
                 System.out.println(e);
             }
         }
-        
+
         toggleReceiving();
         while (receiving){
             System.out.println("Running Receiver...");
