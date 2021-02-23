@@ -3,44 +3,41 @@ package audioLayer;
 import com.Analyzer;
 import com.Layer;
 
-public class AudioLayer implements Layer {
+import java.io.IOException;
+import java.util.Vector;
 
-    public static final int HEADER_SIZE = 512;
+public class AudioLayer extends Layer {
 
     @Override
     public byte[] addHeader(byte[] payload) {
-        // Get Audio Data
-        byte[] body = AudioUtils.record();
-
-        // Create new byte array
-        byte[] newPayload = new byte[payload.length + HEADER_SIZE];
-
-        // Prepend Audio data to the payload
-        System.arraycopy(body, 0, newPayload, 0, HEADER_SIZE);
-        System.arraycopy(payload, 0, newPayload, HEADER_SIZE, payload.length);
-
-        return newPayload;
+        header = AudioUtils.record();
+        return super.addHeader(payload);
     }
 
     @Override
     public byte[] removeHeader(byte[] payload) {
-        // Create new byte array
-        byte[] newPayload = new byte[payload.length - HEADER_SIZE];
+        byte[] audioData = extractHeader(payload);
 
-        // Remove
-        System.arraycopy(payload, HEADER_SIZE, newPayload, 0, payload.length - HEADER_SIZE);
+        // BUFFER AND PLAY AUDIO
 
-        return newPayload;
+        return super.removeHeader(payload);
     }
 
-    @Override
-    public byte[] getHeader(byte[] payload) {
-        // Create new byte array
-        byte[] header = new byte[HEADER_SIZE];
+    private Vector<byte[]> buffer(){
+        Vector<byte[]> buffer = new Vector<>();
+        for(int i = 0; i < 8; i++){
+            //buffer.add(getPacket());
+        }
+        return buffer;
+    }
 
-        // Remove
-        System.arraycopy(payload, HEADER_SIZE, header, 0, HEADER_SIZE);
-
-        return header;
+    private void playBuffer(Vector<byte[]> buffer){
+        for (byte[] frame:buffer) {
+            try {
+                AudioUtils.playBlock(frame);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

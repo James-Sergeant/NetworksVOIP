@@ -1,7 +1,9 @@
 package voipLayer;
 
+import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Analyzer;
+import securityLayer.Securitylayer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -16,6 +18,11 @@ public class Sender implements Runnable{
     private final int PORT;
     private final InetAddress IP;
     private final DatagramSocket SENDER_SOCKET;
+
+    // Layers
+    private final AudioLayer audioLayer = new AudioLayer();
+    private final VoipLayer voipLayer = new VoipLayer();
+    private final Securitylayer securitylayer = new Securitylayer();
 
 
     /**
@@ -97,14 +104,11 @@ public class Sender implements Runnable{
 
     private DatagramPacket createPacket(){
         // Create Payload Buffer
-        byte[] payload = new byte[512 + Analyzer.HEADER_LENGTH];
+        byte[] payload = new byte[0];
 
-        byte[] analyzerHeader = Analyzer.getHeader();
-
-        byte[] body = AudioUtils.record();
-
-        System.arraycopy(analyzerHeader, 0, payload, 0,analyzerHeader.length);
-        System.arraycopy(body, 0, payload, Analyzer.HEADER_LENGTH, body.length);
+        audioLayer.addHeader(payload);
+        voipLayer.addHeader(payload);
+        securitylayer.addHeader(payload);
 
         return new DatagramPacket(payload, payload.length,IP,PORT);
     }

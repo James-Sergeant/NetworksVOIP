@@ -1,13 +1,16 @@
 package voipLayer;
 
+import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Analyzer;
+import securityLayer.Securitylayer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Vector;
 
 public class Receiver implements Runnable{
@@ -19,6 +22,11 @@ public class Receiver implements Runnable{
     private final int PORT;
     private boolean receiving = false;
     private int packetsReceived = 0;
+
+    // Layers
+    private final AudioLayer audioLayer = new AudioLayer();
+    private final VoipLayer voipLayer = new VoipLayer();
+    private final Securitylayer securitylayer = new Securitylayer();
 
     /**
      * The basic receiver
@@ -44,49 +52,29 @@ public class Receiver implements Runnable{
     public void run() {
         toggleReceiving();
         while (receiving) {
-            play();
+            getPacket();
         }
     }
 
-    private void play(){
-        playBuffer(buffer());
-    }
-
-    private byte[] getPacket(){
-        byte[] buffer = new byte[512 + Analyzer.HEADER_LENGTH];
-        byte[] audioData = new byte[512];
+    private void getPacket(){
+        byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
             // Receives packet
             SOCKET.receive(packet);
+
+            buffer = securitylayer.removeHeader(buffer);
+            buffer = voipLayer.removeHeader(buffer);
+            buffer = audioLayer.removeHeader(buffer);
+            System.out.println(Arrays.toString(buffer));
+
             // Extracts audio data from packet
-            System.arraycopy(buffer,Analyzer.HEADER_LENGTH, audioData, 0, 512);
+            //System.arraycopy(buffer,Analyzer.HEADER_LENGTH, audioData, 0, 512);
             // Log Packet
-            Analyzer.logPacket(packet);
+            //Analyzer.logPacket(packet);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        return audioData;
-    }
-
-    private Vector<byte[]> buffer(){
-        Vector<byte[]> buffer = new Vector<>();
-        for(int i = 0; i < 8; i++){
-            if(!receiving) break;
-            buffer.add(getPacket());
-        }
-        return buffer;
-    }
-
-    private void playBuffer(Vector<byte[]> buffer){
-        for (byte[] frame:buffer) {
-            try {
-                AudioUtils.playBlock(frame);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
