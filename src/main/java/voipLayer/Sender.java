@@ -1,8 +1,6 @@
-package networking;
+package voipLayer;
 
-import CMPC3M06.AudioPlayer;
-import CMPC3M06.AudioRecorder;
-import audio.AudioUtils;
+import audioLayer.AudioUtils;
 import com.Analyzer;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -98,6 +96,7 @@ public class Sender implements Runnable{
     }
 
     private DatagramPacket createPacket(){
+        // Create Payload Buffer
         byte[] payload = new byte[512 + Analyzer.HEADER_LENGTH];
 
         byte[] analyzerHeader = Analyzer.getHeader();

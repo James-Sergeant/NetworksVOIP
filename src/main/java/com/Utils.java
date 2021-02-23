@@ -30,11 +30,9 @@ public class Utils {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        int i = 1;
+        byte b = 0;
         while(true) {
-            Thread.sleep(1);
-            System.out.println(i+") "+System.currentTimeMillis());
-            i++;
+            System.out.println(b++);
         }
     }
 }

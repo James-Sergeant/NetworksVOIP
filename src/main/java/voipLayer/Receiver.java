@@ -1,7 +1,6 @@
-package networking;
+package voipLayer;
 
-import CMPC3M06.AudioPlayer;
-import audio.AudioUtils;
+import audioLayer.AudioUtils;
 import com.Analyzer;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -16,7 +15,6 @@ public class Receiver implements Runnable{
     public static byte DATAGRAM_SOCKET_TWO = 1;
     public static byte DATAGRAM_SOCKET_THREE = 2;
 
-    private final AudioPlayer PLAYER;
     private final DatagramSocket SOCKET;
     private final int PORT;
     private boolean receiving = false;
@@ -28,12 +26,11 @@ public class Receiver implements Runnable{
      * @throws SocketException
      */
     public Receiver() throws LineUnavailableException, SocketException {
-        this.PLAYER = new AudioPlayer();
         this.PORT = 55555;
         this.SOCKET = new DatagramSocket(this.PORT);
     }
+
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
-        this.PLAYER = new AudioPlayer();
         this.PORT = PORT;
         this.SOCKET = new DatagramSocket(this.PORT);
     }
@@ -77,6 +74,7 @@ public class Receiver implements Runnable{
     private Vector<byte[]> buffer(){
         Vector<byte[]> buffer = new Vector<>();
         for(int i = 0; i < 8; i++){
+            if(!receiving) break;
             buffer.add(getPacket());
         }
         return buffer;
