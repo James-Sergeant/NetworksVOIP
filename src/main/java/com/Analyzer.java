@@ -60,7 +60,7 @@ public class Analyzer {
         System.out.println(longTime);
 
         String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(), delay);
-        writeLine(line);
+        //writeLine(line);
     }
 
     /**
