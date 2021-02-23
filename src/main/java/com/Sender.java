@@ -99,17 +99,26 @@ public class Sender implements Runnable{
         if(sending){throw  new AlreadySendingException();}
         toggleSending();
         while(sending){
-            byte[] body = record();
-            DatagramPacket packet = new DatagramPacket(body, body.length,IP,PORT);
+            DatagramPacket packet = createPacket();
 
             try {
                 SENDER_SOCKET.send(packet);
-                //System.out.println("Send");
-                //Analyzer.logPacket(packet);
+                Analyzer.logPacket(packet);
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }
         }
+    }
+
+    private DatagramPacket createPacket(){
+        byte[] payload = new byte[512 + Analyzer.HEADER_LENGTH];
+
+        byte[] analyzerHeader = Analyzer.getHeader();
+        byte[] body = record();
+        System.arraycopy(analyzerHeader, 0, payload, 0,analyzerHeader.length);
+        System.arraycopy(body, 0, payload, Analyzer.HEADER_LENGTH, body.length);
+
+        return new DatagramPacket(payload, payload.length,IP,PORT);
     }
 
     /**

@@ -47,18 +47,22 @@ public class Receiver implements Runnable{
     }
 
     private byte[] getPacket(){
-        byte[] buffer = new byte[512];
+        byte[] buffer = new byte[512 + Analyzer.HEADER_LENGTH];
+        byte[] audioData = new byte[512];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
+            // Receives packet
             SOCKET.receive(packet);
-            System.out.println("Receive");
+            // Extracts audio data from packet
+            System.arraycopy(buffer,4, audioData, 0, 512);
+            // Log Packet
             Analyzer.logPacket(packet);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return buffer;
+        return audioData;
     }
 
     private void playAudio(byte[] block){

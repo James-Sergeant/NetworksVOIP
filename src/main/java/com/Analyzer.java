@@ -8,17 +8,16 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.logging.Logger;
 
 public class Analyzer {
 
     // QoS VARIABLES
+    public static final int HEADER_LENGTH = 4; // 4 Bytes
     private static int totalBytes = 0;
-
-    // TIME VARIABLES
-    private static long startTime;
-    private static long endTime;
 
     // LOGGING VARIABLES
     private static boolean consoleOutput;
@@ -33,8 +32,6 @@ public class Analyzer {
     public static void setup(boolean consoleOutput) throws IOException {
         // Sets console output
         Analyzer.consoleOutput = consoleOutput;
-        // Set Start Time
-        startTime = System.currentTimeMillis();
 
         // Get a new log file handle
         File logFile = createLogFile();
@@ -51,10 +48,13 @@ public class Analyzer {
     public static void logPacket(DatagramPacket packet){
         InetAddress senderAddress = packet.getAddress();
         SocketAddress receiverAddress = packet.getSocketAddress();
-        long currentTime = System.currentTimeMillis() - startTime;
 
-        String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(),currentTime);
-        //writeLine(packet.getData()[0]+" : "+senderAddress+" -> "+receiverAddress+", "+packet.getLength()+" bytes, "+currentTime+"ms");
+        // Extracts analyser data from packet
+        byte[] bytesTime = new byte[Analyzer.HEADER_LENGTH];
+        System.arraycopy(packet.getData(),0, bytesTime, 0, Analyzer.HEADER_LENGTH);
+        long longTime = Utils.bytesToLong(bytesTime);
+
+        String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(), bytesTime);
         writeLine(line);
     }
 
@@ -70,6 +70,14 @@ public class Analyzer {
     }
 
     /**
+     * Used to get an array of 4 bytes containing the time the packet was created.
+     * @return byte[]: 4 Bytes containing long of current time
+     */
+    public static byte[] getHeader(){
+        return Utils.longToBytes(System.currentTimeMillis());
+    }
+
+    /**
      * Toggles whether logging should also output lines to the console
      */
     public static void toggleConsoleOutput(){
@@ -82,9 +90,6 @@ public class Analyzer {
      * @throws IOException Thrown if file fails to be found or created.
      */
     private static File createLogFile() throws IOException {
-        // Get current date and time
-        //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MM yyyy HH mm ss LOG");
-        //LocalDateTime now = LocalDateTime.now();
 
         // Specify the file name and path
         File file = new File(logDirectory+"Test_LOG.txt");
