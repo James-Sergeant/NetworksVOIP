@@ -15,7 +15,7 @@ public class Main {
 
         long runTime = 5000; // in milliseconds
 
-        Analyzer.setup(false); // Setup static Analyser
+        Analyzer.setup(true); // Setup static Analyser
 
         // Create Threads
         Thread thread = new Thread(new Receiver());

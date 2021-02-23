@@ -55,7 +55,7 @@ public class Receiver implements Runnable{
             // Receives packet
             SOCKET.receive(packet);
             // Extracts audio data from packet
-            System.arraycopy(buffer,4, audioData, 0, 512);
+            System.arraycopy(buffer,Analyzer.HEADER_LENGTH, audioData, 0, 512);
             // Log Packet
             Analyzer.logPacket(packet);
         } catch (IOException e) {

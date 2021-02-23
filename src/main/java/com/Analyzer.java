@@ -11,12 +11,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class Analyzer {
 
     // QoS VARIABLES
-    public static final int HEADER_LENGTH = 4; // 4 Bytes
+    public static final int HEADER_LENGTH = 8; // 4 Bytes
     private static int totalBytes = 0;
 
     // LOGGING VARIABLES
@@ -53,8 +54,9 @@ public class Analyzer {
         byte[] bytesTime = new byte[Analyzer.HEADER_LENGTH];
         System.arraycopy(packet.getData(),0, bytesTime, 0, Analyzer.HEADER_LENGTH);
         long longTime = Utils.bytesToLong(bytesTime);
+        long delay = System.currentTimeMillis() - longTime;
 
-        String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(), bytesTime);
+        String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(), delay);
         writeLine(line);
     }
 
