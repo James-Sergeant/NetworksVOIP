@@ -1,0 +1,21 @@
+# Audio Recorder
+
+Sample Rate     = 8000 Hz
+Sample Size     = 16 bits
+
+# Calculated Stats
+
+Audio Bit Rate  = (16 bits * 8000)
+                = 128,000 bit/s
+                =  16,000 Bytes/s
+                =      16 KiloByes/s
+                =     125 Kbps
+
+Payload Size    = 512 Bytes
+                = 4096 bits
+
+Sending Rate    = 128,000 bits/s  /  4096 bits
+                = 31.25 packets a second
+
+Packet Interval = 1000 ms / 31.25 p/s
+                = 32 ms
