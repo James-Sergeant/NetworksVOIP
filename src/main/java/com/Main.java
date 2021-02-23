@@ -1,5 +1,6 @@
 package com;
 
+import audioLayer.AudioUtils;
 import voipLayer.Receiver;
 import voipLayer.Sender;
 
@@ -25,21 +26,25 @@ public class Main {
         Receiver receiver = new Receiver();
 
         // Create Threads
-        Thread thread = new Thread(receiver);
-        Thread thread1 = new Thread(sender);
+        Thread receiverThread = new Thread(receiver);
+        Thread senderThread = new Thread(sender);
+        Thread audioThread = new Thread(AudioUtils.PLAYER);
 
         // Start Threads
-        thread.start();
-        thread1.start();
+        receiverThread.start();
+        senderThread.start();
+        audioThread.start();
 
         // Wait until Threads finish (after CALL_LENGTH ms)
         Thread.sleep(CALL_LENGTH * 1000);
 
         sender.toggleSending();
         receiver.toggleReceiving();
+        AudioUtils.PLAYER.togglePlaying();
 
-        thread.join();
-        thread1.join();
+        receiverThread.join();
+        senderThread.join();
+        audioThread.join();
 
         Analyzer.close(); // Safely close static Analyzer
     }

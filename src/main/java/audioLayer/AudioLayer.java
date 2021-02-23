@@ -8,6 +8,10 @@ import java.util.Vector;
 
 public class AudioLayer extends Layer {
 
+    public AudioLayer() {
+        header = new byte[512];
+    }
+
     @Override
     public byte[] addHeader(byte[] payload) {
         header = AudioUtils.record();
@@ -16,28 +20,12 @@ public class AudioLayer extends Layer {
 
     @Override
     public byte[] removeHeader(byte[] payload) {
-        byte[] audioData = extractHeader(payload);
+        // Get audio data from payload and add to the buffer
+        extractHeader(payload);
 
-        // BUFFER AND PLAY AUDIO
+        // Send audio data to Player
+        AudioUtils.PLAYER.storeAudioBlock(header);
 
         return super.removeHeader(payload);
-    }
-
-    private Vector<byte[]> buffer(){
-        Vector<byte[]> buffer = new Vector<>();
-        for(int i = 0; i < 8; i++){
-            //buffer.add(getPacket());
-        }
-        return buffer;
-    }
-
-    private void playBuffer(Vector<byte[]> buffer){
-        for (byte[] frame:buffer) {
-            try {
-                AudioUtils.playBlock(frame);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

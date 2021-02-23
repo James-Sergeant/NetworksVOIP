@@ -8,13 +8,13 @@ import java.io.IOException;
 
 public class AudioUtils {
 
-    private static AudioPlayer PLAYER;
     private static AudioRecorder RECORDER = null;
+    public static VoicePlayer PLAYER = null;
 
     static {
         try {
             RECORDER = new AudioRecorder();
-            PLAYER = new AudioPlayer();
+            PLAYER = new VoicePlayer();
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -33,9 +33,5 @@ public class AudioUtils {
             System.out.println("Failed to recoded block...");
             return new byte[0];
         }
-    }
-
-    public static void playBlock(byte[] block) throws IOException {
-        PLAYER.playBlock(block);
     }
 }

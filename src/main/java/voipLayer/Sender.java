@@ -106,9 +106,9 @@ public class Sender implements Runnable{
         // Create Payload Buffer
         byte[] payload = new byte[0];
 
-        audioLayer.addHeader(payload);
-        voipLayer.addHeader(payload);
-        securitylayer.addHeader(payload);
+        payload = audioLayer.addHeader(payload);
+        payload = voipLayer.addHeader(payload);
+        payload = securitylayer.addHeader(payload);
 
         return new DatagramPacket(payload, payload.length,IP,PORT);
     }

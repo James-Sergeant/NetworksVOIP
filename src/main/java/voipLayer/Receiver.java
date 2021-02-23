@@ -63,7 +63,8 @@ public class Receiver implements Runnable{
         try {
             // Receives packet
             SOCKET.receive(packet);
-            System.out.println(Arrays.toString(buffer));
+
+
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
             buffer = audioLayer.removeHeader(buffer);
