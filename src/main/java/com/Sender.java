@@ -103,7 +103,6 @@ public class Sender implements Runnable{
 
             try {
                 SENDER_SOCKET.send(packet);
-                Analyzer.logPacket(packet);
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }
@@ -114,7 +113,9 @@ public class Sender implements Runnable{
         byte[] payload = new byte[512 + Analyzer.HEADER_LENGTH];
 
         byte[] analyzerHeader = Analyzer.getHeader();
+
         byte[] body = record();
+
         System.arraycopy(analyzerHeader, 0, payload, 0,analyzerHeader.length);
         System.arraycopy(body, 0, payload, Analyzer.HEADER_LENGTH, body.length);
 

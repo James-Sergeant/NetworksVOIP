@@ -28,4 +28,13 @@ public class Utils {
         }
         return result;
     }
+
+    public static void main(String[] args) throws InterruptedException {
+        int i = 1;
+        while(true) {
+            Thread.sleep(1);
+            System.out.println(i+") "+System.currentTimeMillis());
+            i++;
+        }
+    }
 }

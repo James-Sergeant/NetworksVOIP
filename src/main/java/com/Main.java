@@ -19,7 +19,7 @@ public class Main {
 
         // Create Threads
         Thread thread = new Thread(new Receiver());
-        Thread thread1 = new Thread(new Sender());
+        Thread thread1 = new Thread(new Sender("109.147.42.239"));
 
         // Start Threads
         thread.start();

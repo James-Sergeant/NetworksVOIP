@@ -53,8 +53,11 @@ public class Analyzer {
         // Extracts analyser data from packet
         byte[] bytesTime = new byte[Analyzer.HEADER_LENGTH];
         System.arraycopy(packet.getData(),0, bytesTime, 0, Analyzer.HEADER_LENGTH);
+        // Delay
         long longTime = Utils.bytesToLong(bytesTime);
         long delay = System.currentTimeMillis() - longTime;
+        System.out.println(System.currentTimeMillis());
+        System.out.println(longTime);
 
         String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(), delay);
         writeLine(line);
