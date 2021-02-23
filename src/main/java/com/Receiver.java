@@ -70,7 +70,7 @@ public class Receiver implements Runnable{
 
     private Vector<byte[]> buffer(){
         Vector<byte[]> buffer = new Vector<>();
-        for(int i = 0; i < 32; i++){
+        for(int i = 0; i < 8; i++){
             buffer.add(getPacket());
         }
         return buffer;
