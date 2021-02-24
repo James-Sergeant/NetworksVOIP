@@ -4,6 +4,8 @@ import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Analyzer;
 import securityLayer.Securitylayer;
+import uk.ac.uea.cmp.voip.DatagramSocket2;
+import uk.ac.uea.cmp.voip.DatagramSocket3;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public class Sender implements Runnable{
     public Sender() throws UnknownHostException, SocketException, LineUnavailableException {
         PORT = 55555;
         IP = InetAddress.getByName("localhost");
-        SENDER_SOCKET = new DatagramSocket();
+        SENDER_SOCKET = new DatagramSocket3();
     }
 
     /**

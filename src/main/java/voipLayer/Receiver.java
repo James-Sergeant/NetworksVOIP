@@ -4,6 +4,8 @@ import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Analyzer;
 import securityLayer.Securitylayer;
+import uk.ac.uea.cmp.voip.DatagramSocket2;
+import uk.ac.uea.cmp.voip.DatagramSocket3;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class Receiver implements Runnable{
      */
     public Receiver() throws LineUnavailableException, SocketException {
         this.PORT = 55555;
-        this.SOCKET = new DatagramSocket(this.PORT);
+        this.SOCKET = new DatagramSocket3(this.PORT);
     }
 
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
