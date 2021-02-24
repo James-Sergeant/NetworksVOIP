@@ -18,7 +18,6 @@ public class VoicePlayer extends AudioPlayer implements Runnable{
     @Override
     public void run() {
         while(playing) {
-            System.out.println(BUFFER.size());
             if (BUFFER.size() > 10) playAudioBlock();
         }
     }
