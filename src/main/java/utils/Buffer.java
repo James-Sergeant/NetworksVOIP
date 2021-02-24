@@ -25,7 +25,7 @@ public class Buffer implements Iterable<Buffer.Block> {
     }
 
     /**
-     * 
+     *
      * @param block
      */
     public void addBlock(byte[] block){
