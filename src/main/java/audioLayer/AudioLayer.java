@@ -1,10 +1,6 @@
 package audioLayer;
 
-import com.Analyzer;
 import com.Layer;
-
-import java.io.IOException;
-import java.util.Vector;
 
 public class AudioLayer extends Layer {
 
