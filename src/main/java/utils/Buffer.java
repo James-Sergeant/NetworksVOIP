@@ -25,8 +25,8 @@ public class Buffer implements Iterable<Buffer.Block> {
     }
 
     /**
-     *
-     * @param block
+     * Allows a block to be added to the buffer.
+     * @param block Object: The block to be added to the buffer.
      */
     public void addBlock(byte[] block){
         if(buffer[endPointer] != null){
@@ -35,6 +35,11 @@ public class Buffer implements Iterable<Buffer.Block> {
         buffer[endPointer] = new Block(block);
         endPointer = nextPointer(endPointer);
     }
+
+    /**
+     * Checks to see if the buffer is empty.
+     * @return Boolean: True if the buffer is empty.
+     */
     private boolean isEmpty(){
         if(buffer[startPointer] == null){
             return true;
@@ -42,6 +47,11 @@ public class Buffer implements Iterable<Buffer.Block> {
         return false;
     }
 
+    /**
+     * Finds the next pointer, and implements the circular nature of the buffer.
+     * @param currentPointer Integer: The current value of the pointer.
+     * @return Integer: The next value for the pointer.
+     */
     private int nextPointer(int currentPointer){
         if(currentPointer == BUFFER_LENGTH - 1){
             return 0;
@@ -49,23 +59,40 @@ public class Buffer implements Iterable<Buffer.Block> {
         return ++currentPointer;
     }
 
-
+    /**
+     * The iterator method, that provided the defined BufferIterator class.
+     * @return BufferIterator
+     */
     @Override
     public Iterator<Block> iterator() {
         return new BufferIterator();
     }
 
+    /**
+     * Lets you know if the buffer has any values left in it.
+     * @return Boolean: True if there is a value in the buffer.
+     */
     public boolean hasNext() {
-        return !isEmpty() && nextPointer(startPointer) < endPointer;
+        return !isEmpty();
     }
 
+    /**
+     * The BufferIterator class implementing the Iterator functionality from the interface.
+     */
     private class BufferIterator implements Iterator<Block> {
-
+        /**
+         * Used to tell if there is a next block in the buffer.
+         * @return Boolean: True if there is a next block.
+         */
         @Override
         public boolean hasNext() {
             return !isEmpty();
         }
 
+        /**
+         * Returns the next block and removes it from the buffer.
+         * @return Object\<Block>: The next block in the buffer.
+         */
         @Override
         public Block next() {
             Block next = buffer[startPointer];
@@ -75,22 +102,43 @@ public class Buffer implements Iterable<Buffer.Block> {
         }
     }
 
-    protected class Block {
+    /**
+     * A block object used to wrap the byte[] array allowing them to be passed by reference.
+     */
+     class Block {
         private final byte[] block;
+
+
+        /**
+         * Block iterface used to create the block.
+         * @param block: byte[]: The data to be buffered.
+         */
         Block(byte[] block){
             this.block = block;
         }
 
+        /**
+         * Returns the data in the block.
+         * @return byte[]: the blocks data.
+         */
         public byte[] getBlock() {
             return block;
         }
 
+        /**
+         * A utility toString method for debugging.
+         * @return String: the byte[] values.
+         */
         @Override
         public String toString() {
             return Arrays.toString(block);
         }
     }
 
+    /**
+     * A utility toString method for debugging.
+     * @return String: Contains the pointer values and the values within the blocks.
+     */
     @Override
     public String toString() {
         return "Buffer{" +
