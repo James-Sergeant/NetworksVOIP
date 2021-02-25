@@ -17,5 +17,7 @@ Payload Size    = 512 Bytes
 Sending Rate    = 128,000 bits/s  /  4096 bits
                 = 31.25 packets a second
 
+BufferSize      = BUFFER_TIME/ 0.032
+
 Packet Interval = 1000 ms / 31.25 p/s
                 = 32 ms

@@ -1,4 +1,4 @@
-package com;
+package utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,12 +7,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketAddress;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
-import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class Analyzer {
 

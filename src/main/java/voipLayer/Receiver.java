@@ -1,8 +1,6 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
-import audioLayer.AudioUtils;
-import com.Analyzer;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
@@ -12,8 +10,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Arrays;
-import java.util.Vector;
 
 public class Receiver implements Runnable{
     public static byte DATAGRAM_SOCKET_ONE = 0;
