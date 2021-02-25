@@ -1,5 +1,7 @@
 package voipLayer;
 
+import audioLayer.AudioLayer;
+import audioLayer.AudioUtils;
 import com.Layer;
 
 public class VoipLayer extends Layer {
@@ -10,6 +12,12 @@ public class VoipLayer extends Layer {
     private byte prevReceivedPacketNumber = 0;
 
     private static final long[] packetTimes = new long[256];
+
+    private byte[][] buffer = new byte[512][1024];
+    private int bufferPointer = 0;
+    private int bp2 = 0;
+
+    private final AudioLayer audioLayer = new AudioLayer();
 
     public VoipLayer(){
         header = new byte[2];
@@ -44,6 +52,13 @@ public class VoipLayer extends Layer {
         // Set other clients packet number
         prevReceivedPacketNumber = receivedPacketNumber;
         receivedPacketNumber = header[0];
+
+        // ADD TO BUFFER
+        buffer[bufferPointer++] = super.removeHeader(payload);
+        if(bufferPointer > 32){
+            System.out.println("now");
+            audioLayer.removeHeader(buffer[bp2++]);
+        }
 
         // DELAY
         calculateDelay();
