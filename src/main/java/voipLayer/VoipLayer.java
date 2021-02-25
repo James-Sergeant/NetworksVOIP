@@ -4,6 +4,7 @@ import com.Layer;
 
 public class VoipLayer extends Layer {
 
+    // Packet Numbers variables
     private byte packetNumber = 0;
     private static byte receivedPacketNumber = 0;
     private byte prevReceivedPacketNumber = 0;
@@ -14,6 +15,11 @@ public class VoipLayer extends Layer {
         header = new byte[2];
     }
 
+    /**
+     * Adds the current packetNumber and last recieved packet number to the packet's payload. It increments packetNumber.
+     * @param payload byte[]: The packet's payload that needs a header prepended to
+     * @return
+     */
     @Override
     public byte[] addHeader(byte[] payload) {
         // Store current time of this packet
@@ -25,6 +31,12 @@ public class VoipLayer extends Layer {
         return super.addHeader(payload);
     }
 
+    /**
+     * Extracts the header data from the received packet's payload; sets values for prevReceivedPacketNumber &
+     * receivedPacketNumber variables. I currently also calculates the delay and packet loss.
+     * @param payload byte[]: The packet's payload that needs a header removed from
+     * @return
+     */
     @Override
     public byte[] removeHeader(byte[] payload) {
         // Get packet number and store in header variable
@@ -42,6 +54,9 @@ public class VoipLayer extends Layer {
         return super.removeHeader(payload);
     }
 
+    /**
+     * Uses header data from the latest received packet to calculate the time delay between sending and receiving packets
+     */
     private void calculateDelay(){
         // My packet number returned
         int returnedPacketNumberIndex = getPacketTimeIndex(header[1]);
@@ -52,6 +67,9 @@ public class VoipLayer extends Layer {
         //System.out.println("Delay: "+delay);
     }
 
+    /**
+     * Uses header data from the latest received packet to calculate whether packets that were expected, haven't arrived.
+     */
     private void calculatePacketLoss(){
         System.out.println("RECEIVED " + receivedPacketNumber);
         int packetsLost = receivedPacketNumber - (prevReceivedPacketNumber+1);
@@ -63,7 +81,7 @@ public class VoipLayer extends Layer {
 
     /**
      * Converts a byte to an unsigned int
-     * @param packetNumber
+     * @param packetNumber byte: The signed byte to convert to an int
      * @return
      */
     public static int getPacketTimeIndex(byte packetNumber){
