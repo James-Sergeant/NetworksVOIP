@@ -33,7 +33,7 @@ public class Receiver implements Runnable{
      */
     public Receiver() throws LineUnavailableException, SocketException {
         this.PORT = 55555;
-        this.SOCKET = new DatagramSocket3(this.PORT);
+        this.SOCKET = new DatagramSocket(this.PORT);
     }
 
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
