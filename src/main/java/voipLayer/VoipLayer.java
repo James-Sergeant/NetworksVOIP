@@ -55,9 +55,11 @@ public class VoipLayer extends Layer {
 
         // ADD TO BUFFER
         buffer[bufferPointer++] = super.removeHeader(payload);
+
         if(bufferPointer > 32){
             System.out.println("now");
             audioLayer.removeHeader(buffer[bp2++]);
+            //AudioUtils.PLAYER.storeAudioBlock(buffer[bp2++]);
         }
 
         // DELAY
