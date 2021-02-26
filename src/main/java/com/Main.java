@@ -20,7 +20,7 @@ public class Main {
 
     public static void main(String[] args) throws LineUnavailableException, SocketException, UnknownHostException, IOException, InterruptedException {
 
-        Analyzer.setup(false); // Setup static Analyser
+        Analyzer.setup(true); // Setup static Analyser
 
         // Create Receiver & Sender
         Sender sender = new Sender();

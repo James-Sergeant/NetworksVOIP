@@ -4,6 +4,7 @@ import audioLayer.AudioLayer;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
+import utils.Analyzer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -60,7 +61,7 @@ public class Receiver implements Runnable{
         try {
             // Receives packet
             SOCKET.receive(packet);
-
+            Analyzer.logIncomingPacket(packet);
 
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);

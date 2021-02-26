@@ -18,6 +18,11 @@ public class Analyzer {
     private static boolean consoleOutput;
     private static final String logDirectory = "logs/";
     private static BufferedWriter writer;
+    private static InetAddress LOCAL_ADDRESS;
+
+    // PACKET LOGGING INFO
+    private static int sendPacketNumber;
+    private static int receivePacketNumber;
 
     /**
      * Method to initialise Analyzer variables to enable logging of packets.
@@ -33,8 +38,23 @@ public class Analyzer {
         // Initialise the file writer
         writer = new BufferedWriter(new FileWriter(logFile));
 
+        LOCAL_ADDRESS = InetAddress.getLocalHost();
     }
 
+
+    public static void logIncomingPacket(DatagramPacket packet){
+        SocketAddress senderAddress = packet.getSocketAddress();
+        String line = String.format("%5s : %30s <- %30s, %4s bytes", receivePacketNumber,LOCAL_ADDRESS , senderAddress, packet.getLength());
+        writeLine(line);
+    }
+
+
+    public static void logOutgoingPacket(DatagramPacket packet){
+        SocketAddress sentToAddress = packet.getSocketAddress();
+        String line = String.format("%5s : %30s -> %30s, %4s bytes", sendPacketNumber, LOCAL_ADDRESS , sentToAddress, packet.getLength());
+        writeLine(line);
+    }
+    
     /**
      * Logs data about a packet to the log file. Data that is logged is:
      * Unique packet number, src & dst IP addresses, payload size, time
@@ -66,12 +86,12 @@ public class Analyzer {
         }
     }
 
-    /**
-     * Used to get an array of 4 bytes containing the time the packet was created.
-     * @return byte[]: 4 Bytes containing long of current time
-     */
-    public static byte[] getHeader(){
-        return Utils.longToBytes(System.currentTimeMillis());
+    public static void setSendPacketNumber(int sendPacketNumber) {
+        Analyzer.sendPacketNumber = sendPacketNumber;
+    }
+
+    public static void setReceivePacketNumber(int receivePacketNumber) {
+        Analyzer.receivePacketNumber = receivePacketNumber;
     }
 
     /**

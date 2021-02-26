@@ -3,7 +3,9 @@ package voipLayer;
 import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Layer;
+import utils.Analyzer;
 import utils.CircularBuffer;
+import utils.Utils;
 
 public class VoipLayer extends Layer {
 
@@ -35,6 +37,8 @@ public class VoipLayer extends Layer {
         //System.out.println("SEND " + packetNumber);
         header[0] = packetNumber++; // Add packet number to header
         header[1] = receivedPacketNumber; // Add last received packet number to header
+
+        Analyzer.setSendPacketNumber(intPacketNumber);
         return super.addHeader(payload);
     }
 
@@ -51,6 +55,8 @@ public class VoipLayer extends Layer {
         // Set other clients packet number
         prevReceivedPacketNumber = receivedPacketNumber;
         receivedPacketNumber = header[0];
+
+        Analyzer.setReceivePacketNumber(getPacketTimeIndex(receivedPacketNumber));
 
         // ADD TO BUFFER
         buffer.addBlock(payload);

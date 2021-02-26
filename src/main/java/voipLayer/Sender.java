@@ -4,6 +4,7 @@ import audioLayer.AudioLayer;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
+import utils.Analyzer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -96,6 +97,7 @@ public class Sender implements Runnable{
 
             try {
                 SENDER_SOCKET.send(packet);
+                Analyzer.logOutgoingPacket(packet);
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }
