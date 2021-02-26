@@ -52,11 +52,11 @@ public class VoipLayer extends Layer {
         receivedPacketNumber = header[0];
 
         // ADD TO BUFFER
-        buffer.addBlock(payload);
+        //buffer.addBlock(payload);
 
-        if(buffer.size() >= CircularBuffer.BUFFER_LENGTH){
-            audioLayer.removeHeader(super.removeHeader(buffer.popBlock()));
-        }
+        //if(buffer.size() >= CircularBuffer.BUFFER_LENGTH){
+        //    audioLayer.removeHeader(super.removeHeader(buffer.popBlock()));
+        //}
 
         // DELAY
         calculateDelay();
@@ -65,10 +65,6 @@ public class VoipLayer extends Layer {
         calculatePacketLoss();
 
         return super.removeHeader(payload);
-    }
-
-    private orderPacket(){
-
     }
 
     /**
