@@ -22,7 +22,6 @@ public class Receiver implements Runnable{
     private int packetsReceived = 0;
 
     // Layers
-    private final AudioLayer audioLayer = new AudioLayer();
     private final VoipLayer voipLayer = new VoipLayer();
     private final Securitylayer securitylayer = new Securitylayer();
 
@@ -33,7 +32,7 @@ public class Receiver implements Runnable{
      */
     public Receiver() throws LineUnavailableException, SocketException {
         this.PORT = 55555;
-        this.SOCKET = new DatagramSocket3(this.PORT);
+        this.SOCKET = new DatagramSocket(this.PORT);
     }
 
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
@@ -65,7 +64,6 @@ public class Receiver implements Runnable{
 
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
-            buffer = audioLayer.removeHeader(buffer);
 
             // Extracts audio data from packet
             //System.arraycopy(buffer,Analyzer.HEADER_LENGTH, audioData, 0, 512);

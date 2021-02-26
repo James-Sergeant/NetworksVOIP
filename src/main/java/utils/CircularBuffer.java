@@ -4,10 +4,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import static audioLayer.AudioLayer.BLOCK_LENGTH;
-import static audioLayer.AudioLayer.BLOCK_SIZE;
 
 
-public class Buffer implements Iterable<Buffer.Block> {
+public class CircularBuffer implements Iterable<CircularBuffer.Block> {
     public static int BUFFER_DELAY = 1;
     public static int BUFFER_LENGTH = (int)Math.ceil(BUFFER_DELAY/BLOCK_LENGTH);
     //public static int BUFFER_LENGTH = 4;
@@ -18,7 +17,7 @@ public class Buffer implements Iterable<Buffer.Block> {
     /**
      * Creates a new buffer object.
      */
-    Buffer(){
+    public CircularBuffer(){
         startPointer = 0;
         endPointer = 0;
         buffer = new Block[BUFFER_LENGTH];
@@ -57,6 +56,28 @@ public class Buffer implements Iterable<Buffer.Block> {
             return 0;
         }
         return ++currentPointer;
+    }
+
+    public byte[] popBlock(){
+        Block next = buffer[startPointer];
+        buffer[startPointer] = null;
+        startPointer = nextPointer(startPointer);
+        System.out.println("Start Pointer "+startPointer);
+        return next.block;
+    }
+
+    /**
+     * Returns the size of the buffer.
+     * @return Integer: Size of the buffer
+     */
+    public int size(){
+        if(endPointer > startPointer){
+            return endPointer - startPointer;
+        }else if(isEmpty()){
+            return 0;
+        }else {
+            return (BUFFER_LENGTH - startPointer) + endPointer;
+        }
     }
 
     /**
@@ -149,7 +170,7 @@ public class Buffer implements Iterable<Buffer.Block> {
     }
 
     public static void main(String[] args) {
-        Buffer buffer = new Buffer();
+        CircularBuffer buffer = new CircularBuffer();
         System.out.println("Empty buffer: ");
         System.out.println(buffer);
         byte [] one= {1};
