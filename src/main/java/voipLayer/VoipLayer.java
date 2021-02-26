@@ -3,6 +3,7 @@ package voipLayer;
 import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Layer;
+import utils.CircularBuffer;
 
 public class VoipLayer extends Layer {
 
@@ -13,9 +14,7 @@ public class VoipLayer extends Layer {
 
     private static final long[] packetTimes = new long[256];
 
-    private byte[][] buffer = new byte[512][1024];
-    private int bufferPointer = 0;
-    private int bp2 = 0;
+    private CircularBuffer buffer = new CircularBuffer();
 
     private final AudioLayer audioLayer = new AudioLayer();
 
@@ -33,7 +32,7 @@ public class VoipLayer extends Layer {
         // Store current time of this packet
         int intPacketNumber = getPacketTimeIndex(packetNumber); // Get Unsigned int
         packetTimes[intPacketNumber] = System.nanoTime(); // Store current time
-        System.out.println("SEND " + packetNumber);
+        //System.out.println("SEND " + packetNumber);
         header[0] = packetNumber++; // Add packet number to header
         header[1] = receivedPacketNumber; // Add last received packet number to header
         return super.addHeader(payload);
@@ -54,12 +53,10 @@ public class VoipLayer extends Layer {
         receivedPacketNumber = header[0];
 
         // ADD TO BUFFER
-        buffer[bufferPointer++] = super.removeHeader(payload);
+        buffer.addBlock(payload);
 
-        if(bufferPointer > 32){
-            System.out.println("now");
-            audioLayer.removeHeader(buffer[bp2++]);
-            //AudioUtils.PLAYER.storeAudioBlock(buffer[bp2++]);
+        if(buffer.size() >= CircularBuffer.BUFFER_LENGTH){
+            audioLayer.removeHeader(super.removeHeader(buffer.popBlock()));
         }
 
         // DELAY
@@ -88,7 +85,7 @@ public class VoipLayer extends Layer {
      * Uses header data from the latest received packet to calculate whether packets that were expected, haven't arrived.
      */
     private void calculatePacketLoss(){
-        System.out.println("RECEIVED " + receivedPacketNumber);
+        //System.out.println("RECEIVED " + receivedPacketNumber);
         int packetsLost = receivedPacketNumber - (prevReceivedPacketNumber+1);
         if(packetsLost > 0){
             System.out.println(receivedPacketNumber+ " "+ prevReceivedPacketNumber);

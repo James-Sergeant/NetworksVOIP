@@ -17,7 +17,7 @@ public class CircularBuffer implements Iterable<CircularBuffer.Block> {
     /**
      * Creates a new buffer object.
      */
-    CircularBuffer(){
+    public CircularBuffer(){
         startPointer = 0;
         endPointer = 0;
         buffer = new Block[BUFFER_LENGTH];
@@ -56,6 +56,28 @@ public class CircularBuffer implements Iterable<CircularBuffer.Block> {
             return 0;
         }
         return ++currentPointer;
+    }
+
+    public byte[] popBlock(){
+        Block next = buffer[startPointer];
+        buffer[startPointer] = null;
+        startPointer = nextPointer(startPointer);
+        System.out.println("Start Pointer "+startPointer);
+        return next.block;
+    }
+
+    /**
+     * Returns the size of the buffer.
+     * @return Integer: Size of the buffer
+     */
+    public int size(){
+        if(endPointer > startPointer){
+            return endPointer - startPointer;
+        }else if(isEmpty()){
+            return 0;
+        }else {
+            return (BUFFER_LENGTH - startPointer) + endPointer;
+        }
     }
 
     /**
