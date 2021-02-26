@@ -8,6 +8,7 @@ import static audioLayer.AudioLayer.BLOCK_SIZE;
 public class AudioBuffer {
 
     private final int MAX_PACKET_NUM = 255;
+    private final int HEAD_ROOM = 8;
 
     private final double BUFFER_DELAY; // Seconds
     public final int BUFFER_LENGTH;
@@ -23,7 +24,7 @@ public class AudioBuffer {
         BUFFER = new Vector<>();
 
         startPacketNumber = 0;
-        endPacketNumber = 0;
+        endPacketNumber = BUFFER_LENGTH-1;
         currentLength = 0;
 
         for(int i = 0; i < BUFFER_LENGTH; i++){
@@ -32,19 +33,77 @@ public class AudioBuffer {
     }
 
     public void insertBlock(int packetNumber, byte[] block){
-        if(currentLength == BUFFER_LENGTH) popBlock();
+        /*
+            Check if packet number within buffer range
+            If True ->  insert into correct slot
+            if false:
+                Check if to add extra newpacket
+                if true -> increase size of buffer and insert at end
+                if false:
+                    discard packet
+         */
 
-        int bufferIndex = calculateBufferIndex(packetNumber);
-        Logger.log("P-Numbe "+packetNumber);
-        Logger.log("B-Index "+bufferIndex);
-        Logger.log("start "+startPacketNumber);
-        Logger.log("end "+endPacketNumber);
-        if(bufferIndex != -1){
-            BUFFER.set(bufferIndex,block);
-            if(currentLength != BUFFER_LENGTH) currentLength++;
+        Logger.log("Packet Num: "+packetNumber);
+        if(isWithinRange(packetNumber)){
+            // INSERT INTO BUFFER
+            int bufferIndex = calculateBufferIndex(packetNumber);
+            BUFFER.set(bufferIndex, block);
+            System.out.println("#1");
+            Logger.log(this);
+        }else if(isWithinExtraHeadRoom(packetNumber)){
+            for(int i = 0; i < HEAD_ROOM; i++){
+                BUFFER.add(null);
+                endPacketNumber = nextPointer(endPacketNumber);
+            }
+            // INSERT INTO BUFFER
+            int bufferIndex = calculateBufferIndex(packetNumber);
+            BUFFER.set(bufferIndex, block);
+            System.out.println("#2");
             Logger.log(this);
         }
     }
+
+    private boolean isWithinExtraHeadRoom(int packetNumber){
+        if(packetNumber >= startPacketNumber){
+            if(packetNumber <= endPacketNumber + HEAD_ROOM){
+                return true;
+            }else if(packetNumber <= MAX_PACKET_NUM){
+                return true;
+            }
+        }else if(packetNumber <= endPacketNumber + HEAD_ROOM){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isWithinRange(int packetNumber){
+        Logger.log("s ="+ startPacketNumber + ", e = "+endPacketNumber);
+        if(packetNumber >= startPacketNumber){
+            if(packetNumber <= endPacketNumber){
+                return true;
+            }else if(startPacketNumber > endPacketNumber && packetNumber <= MAX_PACKET_NUM){
+                return true;
+            }
+        }else if(packetNumber <= endPacketNumber){
+            return true;
+        }
+        return false;
+    }
+
+    private int calculateBufferIndex(int packetNumber){
+        if(packetNumber >= startPacketNumber){
+            if(packetNumber <= endPacketNumber){
+                return packetNumber - startPacketNumber;
+            }else if(packetNumber <= MAX_PACKET_NUM){
+                return packetNumber - startPacketNumber;
+            }
+        }else if(packetNumber <= endPacketNumber){
+            return (MAX_PACKET_NUM - startPacketNumber) + packetNumber;
+        }
+
+        return -1;
+    }
+
     /*
     private int calculateBufferIndex(int packetNumber){
         if(startPacketNumber < MAX_PACKET_NUM - BUFFER_LENGTH){ // 0 < startPacketNum < 239
@@ -62,6 +121,7 @@ public class AudioBuffer {
         }
     }
 */
+    /*
     private int calculateBufferIndex(int packetNumber){
         if(packetNumber >= startPacketNumber){
             if(packetNumber <= endPacketNumber){
@@ -74,6 +134,8 @@ public class AudioBuffer {
         }
 
         return -1;
+
+     */
         /*
         if(startPacketNumber < MAX_PACKET_NUM - BUFFER_LENGTH){ // 0 < packetNum < 239
             if(packetNumber >= startPacketNumber && packetNumber <= startPacketNumber + BUFFER_LENGTH){
@@ -87,13 +149,13 @@ public class AudioBuffer {
         }
         return false;
 
-         */
-    }
 
+    }
+*/
     public byte[] popBlock(){
         byte[] block = BUFFER.get(0);
         startPacketNumber = nextPointer(startPacketNumber);
-        endPacketNumber = nextPointer(startPacketNumber);
+        endPacketNumber = nextPointer(endPacketNumber);
 
         BUFFER.remove(0);
         BUFFER.add(null);
@@ -114,11 +176,11 @@ public class AudioBuffer {
     @Override
     public String toString() {
         String s = "";
-        for(int i = 0; i< BUFFER_LENGTH; i++){
+        for(int i = 0; i< BUFFER.size(); i++){
             if(BUFFER.get(i) == null){
-                s += "0, ";
+                s += "-, ";
             }else{
-                s += "1, ";
+                s += BUFFER.get(i)[0]+", ";
             }
         }
         return "AudioBuffer{" +s+ '}';
@@ -151,13 +213,15 @@ public class AudioBuffer {
         buffer.popBlock();
         buffer.popBlock();
         buffer.popBlock();
-        */
 
+        buffer.insertBlock(23, testBlock);
+        */
         // TESTING CIRCULAR BLOCK INSERTION
-        buffer.insertBlock(0, null);
-        for(int i = 1; i < 400; i++){
-            buffer.insertBlock(i, i % 16 == 0 ? testBlock : null);
+        /*
+        for(int i = 0; i < 500; i++){
+            buffer.insertBlock(i%256, testBlock);
         }
+        */
 
     }
 }
