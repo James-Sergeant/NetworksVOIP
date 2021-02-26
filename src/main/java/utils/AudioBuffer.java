@@ -6,11 +6,11 @@ import static audioLayer.AudioLayer.BLOCK_LENGTH;
 import static audioLayer.AudioLayer.BLOCK_SIZE;
 
 public class AudioBuffer {
-    public final int BUFFER_DELAY;
+    public final double BUFFER_DELAY;
     public final int BUFFER_LENGTH;
     private Vector<byte[]> BUFFER;
 
-    AudioBuffer(int BUFFER_DELAY){
+    public AudioBuffer(double BUFFER_DELAY){
         this.BUFFER_DELAY = BUFFER_DELAY;
         this.BUFFER_LENGTH = (int)Math.ceil(BUFFER_DELAY/BLOCK_LENGTH);
         BUFFER = new Vector<>();
@@ -24,6 +24,9 @@ public class AudioBuffer {
       final Vector<byte[]> r = BUFFER;
       BUFFER = new Vector<>();
       return r;
+    }
+    public int size(){
+        return BUFFER.size();
     }
 
 

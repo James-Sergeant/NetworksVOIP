@@ -3,6 +3,7 @@ package voipLayer;
 import audioLayer.AudioLayer;
 import audioLayer.AudioUtils;
 import com.Layer;
+import utils.AudioBuffer;
 import utils.CircularBuffer;
 
 public class VoipLayer extends Layer {
@@ -13,8 +14,6 @@ public class VoipLayer extends Layer {
     private byte prevReceivedPacketNumber = 0;
 
     private static final long[] packetTimes = new long[256];
-
-    private CircularBuffer buffer = new CircularBuffer();
 
     private final AudioLayer audioLayer = new AudioLayer();
 
@@ -66,6 +65,10 @@ public class VoipLayer extends Layer {
         calculatePacketLoss();
 
         return super.removeHeader(payload);
+    }
+
+    private orderPacket(){
+
     }
 
     /**
