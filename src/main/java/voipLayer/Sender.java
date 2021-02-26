@@ -34,7 +34,7 @@ public class Sender implements Runnable{
     public Sender() throws UnknownHostException, SocketException, LineUnavailableException {
         PORT = 55555;
         IP = InetAddress.getByName("localhost");
-        SENDER_SOCKET = new DatagramSocket();
+        SENDER_SOCKET = new DatagramSocket3();
     }
 
     /**

@@ -1,10 +1,8 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
-import audioLayer.AudioUtils;
 import com.Layer;
 import utils.AudioBuffer;
-import utils.CircularBuffer;
 
 public class VoipLayer extends Layer {
 
@@ -16,6 +14,8 @@ public class VoipLayer extends Layer {
     private static final long[] packetTimes = new long[256];
 
     private final AudioLayer audioLayer = new AudioLayer();
+
+    public static final AudioBuffer BUFFER = new AudioBuffer(0.5);
 
     public VoipLayer(){
         header = new byte[2];
@@ -52,11 +52,7 @@ public class VoipLayer extends Layer {
         receivedPacketNumber = header[0];
 
         // ADD TO BUFFER
-        //buffer.addBlock(payload);
-
-        //if(buffer.size() >= CircularBuffer.BUFFER_LENGTH){
-        //    audioLayer.removeHeader(super.removeHeader(buffer.popBlock()));
-        //}
+        BUFFER.insertBlock(receivedPacketNumber, audioLayer.getAudioData(super.removeHeader(payload)));
 
         // DELAY
         calculateDelay();

@@ -48,7 +48,7 @@ public class AudioBuffer {
             // INSERT INTO BUFFER
             int bufferIndex = calculateBufferIndex(packetNumber);
             BUFFER.set(bufferIndex, block);
-            System.out.println("#1");
+            Logger.log("#1: "+bufferIndex);
             Logger.log(this);
         }else if(isWithinExtraHeadRoom(packetNumber)){
             for(int i = 0; i < HEAD_ROOM; i++){
@@ -58,7 +58,7 @@ public class AudioBuffer {
             // INSERT INTO BUFFER
             int bufferIndex = calculateBufferIndex(packetNumber);
             BUFFER.set(bufferIndex, block);
-            System.out.println("#2");
+            Logger.log("#2");
             Logger.log(this);
         }
     }
@@ -170,7 +170,7 @@ public class AudioBuffer {
     }
 
     public int size(){
-        return BUFFER.size();
+        return currentLength;
     }
 
     @Override
@@ -180,7 +180,7 @@ public class AudioBuffer {
             if(BUFFER.get(i) == null){
                 s += "-, ";
             }else{
-                s += BUFFER.get(i)[0]+", ";
+                s += BUFFER.get(i)+", ";
             }
         }
         return "AudioBuffer{" +s+ '}';

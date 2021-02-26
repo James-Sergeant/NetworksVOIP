@@ -8,6 +8,6 @@ public class Logger {
     }
 
     public static <T> void log(T string){
-        System.out.println(string);
+        if(logging) System.out.println(string);
     }
 }

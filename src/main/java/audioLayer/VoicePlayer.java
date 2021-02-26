@@ -1,6 +1,7 @@
 package audioLayer;
 
 import CMPC3M06.AudioPlayer;
+import voipLayer.VoipLayer;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -17,8 +18,13 @@ public class VoicePlayer extends AudioPlayer implements Runnable{
 
     @Override
     public void run() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         while(playing) {
-            if (BUFFER.size() > 10) playAudioBlock();
+            playAudioBlock();
         }
     }
 
@@ -32,10 +38,7 @@ public class VoicePlayer extends AudioPlayer implements Runnable{
 
     private void playAudioBlock(){
         try {
-            playBlock(BUFFER.get(0));
-            synchronized (BUFFER) {
-                BUFFER.remove(0);
-            }
+            playBlock(VoipLayer.BUFFER.popBlock());
         } catch (IOException e) {
             e.printStackTrace();
         }

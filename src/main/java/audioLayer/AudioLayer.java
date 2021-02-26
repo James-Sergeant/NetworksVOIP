@@ -26,4 +26,9 @@ public class AudioLayer extends Layer {
 
         return super.removeHeader(payload);
     }
+
+    public byte[] getAudioData(byte[] payload){
+        extractHeader(payload);
+        return header.clone();
+    }
 }
