@@ -62,7 +62,6 @@ public class CircularBuffer implements Iterable<CircularBuffer.Block> {
         Block next = buffer[startPointer];
         buffer[startPointer] = null;
         startPointer = nextPointer(startPointer);
-        System.out.println("Start Pointer "+startPointer);
         return next.block;
     }
 
