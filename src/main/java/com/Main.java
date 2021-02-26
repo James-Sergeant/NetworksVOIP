@@ -16,7 +16,7 @@ public class Main {
     private static final String SERGEANT_IP = "109.147.42.239";
     private static final String BURLING_IP = "86.154.116.23";
 
-    private static final int CALL_LENGTH = 50; // Seconds
+    private static final int CALL_LENGTH = 5; // Seconds
 
     public static void main(String[] args) throws LineUnavailableException, SocketException, UnknownHostException, IOException, InterruptedException {
 

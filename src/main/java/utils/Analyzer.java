@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 
 public class Analyzer {
@@ -15,6 +16,7 @@ public class Analyzer {
     private static int totalBytes = 0;
 
     // LOGGING VARIABLES
+    private static long startTime;
     private static boolean consoleOutput;
     private static final String logDirectory = "logs/";
     private static BufferedWriter writer;
@@ -39,40 +41,39 @@ public class Analyzer {
         writer = new BufferedWriter(new FileWriter(logFile));
 
         LOCAL_ADDRESS = InetAddress.getLocalHost();
+        startTime = System.nanoTime();
+
+        writeLine(String.format("%10s, %30s, %30s, %5s, %4s", "Time", "Source IP Address" , "Destination IP Address", "Packet Number", "Packet Length"));
     }
 
 
     public static void logIncomingPacket(DatagramPacket packet){
-        SocketAddress senderAddress = packet.getSocketAddress();
-        String line = String.format("%5s : %30s <- %30s, %4s bytes", receivePacketNumber,LOCAL_ADDRESS , senderAddress, packet.getLength());
-        writeLine(line);
+        logPacket(packet.getSocketAddress(), LOCAL_ADDRESS, sendPacketNumber, packet.getLength());
     }
 
 
     public static void logOutgoingPacket(DatagramPacket packet){
-        SocketAddress sentToAddress = packet.getSocketAddress();
-        String line = String.format("%5s : %30s -> %30s, %4s bytes", sendPacketNumber, LOCAL_ADDRESS , sentToAddress, packet.getLength());
-        writeLine(line);
+        logPacket(LOCAL_ADDRESS, packet.getSocketAddress(), sendPacketNumber, packet.getLength());
     }
     
     /**
      * Logs data about a packet to the log file. Data that is logged is:
      * Unique packet number, src & dst IP addresses, payload size, time
-     * @param packet DatagramPacket: The packet to be logged
      */
-    public static void logPacket(DatagramPacket packet){
-        InetAddress senderAddress = packet.getAddress();
-        SocketAddress receiverAddress = packet.getSocketAddress();
+    public static void logPacket(InetAddress src, SocketAddress dst, int packetNumber, int length){
+        double time = (System.nanoTime() - startTime)*0.000001;
+        String line = String.format("%7s ms, %30s, %30s, %5s, %4s bytes", (int)time, src , dst, packetNumber, length);
+        writeLine(line);
+    }
 
-        // Extracts analyser data from packet
-        byte[] bytesTime = new byte[Analyzer.HEADER_LENGTH];
-        System.arraycopy(packet.getData(),0, bytesTime, 0, Analyzer.HEADER_LENGTH);
-        // Delay
-        long longTime = Utils.bytesToLong(bytesTime);
-        long delay = System.currentTimeMillis() - longTime;
-
-        String line = String.format("%10s : %30s, %30s, %4s bytes, %6s ms", packet.getData()[0]*packet.getData()[50],senderAddress,receiverAddress,packet.getLength(), delay);
-        //writeLine(line);
+    /**
+     * Logs data about a packet to the log file. Data that is logged is:
+     * Unique packet number, src & dst IP addresses, payload size, time
+     */
+    public static void logPacket(SocketAddress src, InetAddress dst, int packetNumber, int length){
+        double time = (System.nanoTime() - startTime)*0.000001;
+        String line = String.format("%7s ms, %30s, %30s, %5s, %4s bytes", (int)time, src , dst, packetNumber, length);
+        writeLine(line);
     }
 
     /**
