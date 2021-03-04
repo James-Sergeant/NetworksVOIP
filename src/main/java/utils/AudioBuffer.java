@@ -16,7 +16,7 @@ public class AudioBuffer {
 
     private int startPacketNumber;
     private int endPacketNumber;
-    private int currentLength;
+    private Integer currentLength;
 
     public AudioBuffer(double buffer_delay){
         BUFFER_DELAY = buffer_delay;
@@ -43,11 +43,14 @@ public class AudioBuffer {
                     discard packet
          */
 
+        if(isEmpty()) firstPacketSetup(packetNumber);
+
         Logger.log("Packet Num: "+packetNumber);
         if(isWithinRange(packetNumber)){
             // INSERT INTO BUFFER
             int bufferIndex = calculateBufferIndex(packetNumber);
             BUFFER.set(bufferIndex, block);
+            synchronized (currentLength){ currentLength++;}
             Logger.log("#1: "+bufferIndex);
             Logger.log(this);
         }else if(isWithinExtraHeadRoom(packetNumber)){
@@ -58,8 +61,18 @@ public class AudioBuffer {
             // INSERT INTO BUFFER
             int bufferIndex = calculateBufferIndex(packetNumber);
             BUFFER.set(bufferIndex, block);
+            synchronized (currentLength){ currentLength++;}
             Logger.log("#2");
             Logger.log(this);
+        }
+    }
+
+    private void firstPacketSetup(int packetNumber){
+        System.out.println("START");
+        startPacketNumber = packetNumber;
+        endPacketNumber = packetNumber;
+        for(int i = 0; i < BUFFER.size()-1; i++){
+            endPacketNumber = nextPointer(endPacketNumber);
         }
     }
 
@@ -106,23 +119,35 @@ public class AudioBuffer {
 
     public byte[] popBlock(){
         byte[] block = BUFFER.get(0);
-        startPacketNumber = nextPointer(startPacketNumber);
-        endPacketNumber = nextPointer(endPacketNumber);
+        //System.out.println(block);
+        //if(block == null) {
+            startPacketNumber = nextPointer(startPacketNumber);
+            endPacketNumber = nextPointer(endPacketNumber);
 
-        BUFFER.remove(0);
-        BUFFER.add(null);
+            BUFFER.remove(0);
+            BUFFER.add(null);
 
-        Logger.log(this);
-        return block;
+            synchronized (currentLength) {
+                currentLength--;
+            }
+
+            Logger.log("POP: "+ startPacketNumber);
+        //}
+
+        return block == null ? new byte[512] : block;
     }
 
-    private int nextPointer(int pointer){
+    private synchronized int nextPointer(int pointer){
         if(pointer == MAX_PACKET_NUM) return 0;
         return pointer + 1;
     }
 
     public int size(){
         return currentLength;
+    }
+
+    public boolean isEmpty(){
+        synchronized (currentLength) {return currentLength == 0;}
     }
 
     @Override
@@ -132,7 +157,7 @@ public class AudioBuffer {
             if(BUFFER.get(i) == null){
                 s += "-, ";
             }else{
-                s += BUFFER.get(i)+", ";
+                s += "1, ";
             }
         }
         return "AudioBuffer{" +s+ '}';

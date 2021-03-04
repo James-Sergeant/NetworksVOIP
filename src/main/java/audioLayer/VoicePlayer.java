@@ -12,6 +12,9 @@ public class VoicePlayer extends AudioPlayer implements Runnable{
     private final Vector<byte[]> BUFFER;
     private boolean playing = true;
 
+    private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
+    private volatile byte[] audioBlock;
+
     public VoicePlayer() throws LineUnavailableException {
         BUFFER = new Vector<>();
     }
@@ -38,7 +41,10 @@ public class VoicePlayer extends AudioPlayer implements Runnable{
 
     private void playAudioBlock(){
         try {
-            playBlock(VoipLayer.BUFFER.popBlock());
+            if(!VoipLayer.BUFFER.isEmpty()) {
+                audioBlock = VoipLayer.BUFFER.popBlock();
+                playBlock(audioBlock);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
