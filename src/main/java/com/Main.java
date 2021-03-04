@@ -23,7 +23,7 @@ public class Main {
         Analyzer.setup(false); // Setup static Analyser
 
         // Create Receiver & Sender
-        Sender sender = new Sender(BURLING_IP);
+        Sender sender = new Sender();
         Receiver receiver = new Receiver();
 
         // Create Threads

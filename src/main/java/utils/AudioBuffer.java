@@ -104,54 +104,6 @@ public class AudioBuffer {
         return -1;
     }
 
-    /*
-    private int calculateBufferIndex(int packetNumber){
-        if(startPacketNumber < MAX_PACKET_NUM - BUFFER_LENGTH){ // 0 < startPacketNum < 239
-            return packetNumber - startPacketNumber;
-        }else{// 239 <= startPacketNum < 256
-            int circularMax = (startPacketNumber+BUFFER_LENGTH)-MAX_PACKET_NUM; // 0 <= circularMax < 16
-            int distToMax = MAX_PACKET_NUM - startPacketNumber;// 0 <= distToMax < 16
-            if(packetNumber > startPacketNumber){
-                return packetNumber - startPacketNumber;
-            }else if(packetNumber <= circularMax){
-                return distToMax + packetNumber;
-            }else{
-                return -1;
-            }
-        }
-    }
-*/
-    /*
-    private int calculateBufferIndex(int packetNumber){
-        if(packetNumber >= startPacketNumber){
-            if(packetNumber <= endPacketNumber){
-                return packetNumber - startPacketNumber;
-            }else if(packetNumber <= MAX_PACKET_NUM){
-                return packetNumber - startPacketNumber;
-            }
-        }else if(packetNumber <= endPacketNumber){
-            return (MAX_PACKET_NUM - startPacketNumber) + packetNumber;
-        }
-
-        return -1;
-
-     */
-        /*
-        if(startPacketNumber < MAX_PACKET_NUM - BUFFER_LENGTH){ // 0 < packetNum < 239
-            if(packetNumber >= startPacketNumber && packetNumber <= startPacketNumber + BUFFER_LENGTH){
-                return true;
-            }
-        }else{
-            int circularMax = (startPacketNumber+BUFFER_LENGTH)-MAX_PACKET_NUM;
-            if(packetNumber >= startPacketNumber && packetNumber <= circularMax){
-                return true;
-            }
-        }
-        return false;
-
-
-    }
-*/
     public byte[] popBlock(){
         byte[] block = BUFFER.get(0);
         startPacketNumber = nextPointer(startPacketNumber);
@@ -222,6 +174,5 @@ public class AudioBuffer {
             buffer.insertBlock(i%256, testBlock);
         }
         */
-
     }
 }
