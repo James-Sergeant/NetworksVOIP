@@ -25,6 +25,8 @@ public class Analyzer {
     // PACKET LOGGING INFO
     private static int sendPacketNumber;
     private static int receivePacketNumber;
+    private static double delay;
+    private static int loss;
 
     /**
      * Method to initialise Analyzer variables to enable logging of packets.
@@ -43,12 +45,12 @@ public class Analyzer {
         LOCAL_ADDRESS = InetAddress.getLocalHost();
         startTime = System.nanoTime();
 
-        writeLine(String.format("%10s, %30s, %30s, %5s, %4s", "Time", "Source IP Address" , "Destination IP Address", "Packet Number", "Packet Length"));
+        writeLine(String.format("%10s, %30s, %30s, %5s, %4s, %5s, %4s", "Time", "Source IP Address" , "Destination IP Address", "Packet Number", "Packet Length", "Delay", "Loss"));
     }
 
 
     public static void logIncomingPacket(DatagramPacket packet){
-        logPacket(packet.getSocketAddress(), LOCAL_ADDRESS, sendPacketNumber, packet.getLength());
+        logPacket(packet.getSocketAddress(), LOCAL_ADDRESS, receivePacketNumber, packet.getLength(), delay, loss);
     }
 
 
@@ -70,9 +72,9 @@ public class Analyzer {
      * Logs data about a packet to the log file. Data that is logged is:
      * Unique packet number, src & dst IP addresses, payload size, time
      */
-    public static void logPacket(SocketAddress src, InetAddress dst, int packetNumber, int length){
+    public static void logPacket(SocketAddress src, InetAddress dst, int packetNumber, int length, double delay,int loss){
         double time = (System.nanoTime() - startTime)*0.000001;
-        String line = String.format("%7s ms, %30s, %30s, %5s, %4s bytes", (int)time, src , dst, packetNumber, length);
+        String line = String.format("%7s, %30s, %30s, %5s, %4s bytes, %.4f, %4s", (int)time, src , dst, packetNumber, length, delay, loss);
         writeLine(line);
     }
 
@@ -91,8 +93,10 @@ public class Analyzer {
         Analyzer.sendPacketNumber = sendPacketNumber;
     }
 
-    public static void setReceivePacketNumber(int receivePacketNumber) {
+    public static void ReceivePacketData(int receivePacketNumber, double delay,int loss) {
         Analyzer.receivePacketNumber = receivePacketNumber;
+        Analyzer.delay = delay;
+        Analyzer.loss = loss;
     }
 
     /**

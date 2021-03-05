@@ -1,11 +1,9 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
-import audioLayer.AudioUtils;
 import com.Layer;
 import utils.Analyzer;
 import utils.CircularBuffer;
-import utils.Utils;
 
 public class VoipLayer extends Layer {
 
@@ -56,7 +54,7 @@ public class VoipLayer extends Layer {
         prevReceivedPacketNumber = receivedPacketNumber;
         receivedPacketNumber = header[0];
 
-        Analyzer.setReceivePacketNumber(getPacketTimeIndex(receivedPacketNumber));
+        Analyzer.ReceivePacketData(getPacketTimeIndex(receivedPacketNumber),calculateDelay(), calculatePacketLoss());
 
         // ADD TO BUFFER
         buffer.addBlock(payload);
@@ -77,26 +75,28 @@ public class VoipLayer extends Layer {
     /**
      * Uses header data from the latest received packet to calculate the time delay between sending and receiving packets
      */
-    private void calculateDelay(){
+    private double calculateDelay(){
         // My packet number returned
         int returnedPacketNumberIndex = getPacketTimeIndex(header[1]);
         // Calculate Delay between sending and receiving packet.
         long packetTime = packetTimes[returnedPacketNumberIndex];
         double delay = ((System.nanoTime() - packetTime))*Math.pow(10,-6); // Delay in ms
-
+        return delay;
         //System.out.println("Delay: "+delay);
     }
 
     /**
      * Uses header data from the latest received packet to calculate whether packets that were expected, haven't arrived.
      */
-    private void calculatePacketLoss(){
+    private int calculatePacketLoss(){
         //System.out.println("RECEIVED " + receivedPacketNumber);
         int packetsLost = receivedPacketNumber - (prevReceivedPacketNumber+1);
         if(packetsLost > 0){
-            System.out.println(receivedPacketNumber+ " "+ prevReceivedPacketNumber);
-            System.out.println("Packets Lost : "+packetsLost+" packets");
+            return packetsLost;
+            //System.out.println(receivedPacketNumber+ " "+ prevReceivedPacketNumber);
+            //System.out.println("Packets Lost : "+packetsLost+" packets");
         }
+        return 0;
     }
 
     /**
