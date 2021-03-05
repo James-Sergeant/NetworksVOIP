@@ -19,7 +19,7 @@ public class Receiver implements Runnable{
     private final DatagramSocket SOCKET;
     private final int PORT;
     private boolean receiving = false;
-    private int TIMEOUT = 50;
+    private int TIMEOUT = 0;
     private int packetsReceived = 0;
 
     // Layers
