@@ -29,23 +29,19 @@ public class Main {
         // Create Threads
         Thread receiverThread = new Thread(receiver);
         Thread senderThread = new Thread(sender);
-        Thread audioThread = new Thread(AudioUtils.PLAYER);
 
         // Start Threads
         receiverThread.start();
         senderThread.start();
-        audioThread.start();
 
         // Wait until Threads finish (after CALL_LENGTH ms)
         Thread.sleep(CALL_LENGTH * 1000);
 
         sender.toggleSending();
         receiver.toggleReceiving();
-        AudioUtils.PLAYER.togglePlaying();
 
         receiverThread.join();
         senderThread.join();
-        audioThread.join();
 
         Analyzer.close(); // Safely close static Analyzer
     }

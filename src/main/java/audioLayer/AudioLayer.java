@@ -22,13 +22,8 @@ public class AudioLayer extends Layer {
         extractHeader(payload);
 
         // Send audio data to Player
-        AudioUtils.PLAYER.storeAudioBlock(header);
+        AudioUtils.play(header);
 
         return super.removeHeader(payload);
-    }
-
-    public byte[] getAudioData(byte[] payload){
-        extractHeader(payload);
-        return header.clone();
     }
 }

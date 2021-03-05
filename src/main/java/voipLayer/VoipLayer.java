@@ -13,9 +13,7 @@ public class VoipLayer extends Layer {
 
     private static final long[] packetTimes = new long[256];
 
-    private final AudioLayer audioLayer = new AudioLayer();
-
-    public static final AudioBuffer BUFFER = new AudioBuffer(0.5);
+    private static final AudioBuffer BUFFER = new AudioBuffer(0.5);
 
     public VoipLayer(){
         header = new byte[2];
@@ -52,7 +50,7 @@ public class VoipLayer extends Layer {
         receivedPacketNumber = header[0];
 
         // ADD TO BUFFER
-        BUFFER.insertBlock(receivedPacketNumber, audioLayer.getAudioData(super.removeHeader(payload)));
+        BUFFER.insertBlock(receivedPacketNumber, super.removeHeader(payload));
 
         // DELAY
         calculateDelay();
@@ -61,6 +59,14 @@ public class VoipLayer extends Layer {
         calculatePacketLoss();
 
         return super.removeHeader(payload);
+    }
+
+    public byte[] getAudioBlock(){
+        return BUFFER.popBlock();
+    }
+
+    public boolean allowPlaying(){
+        return !BUFFER.isRefilling();
     }
 
     /**

@@ -19,9 +19,11 @@ public class Receiver implements Runnable{
     private final DatagramSocket SOCKET;
     private final int PORT;
     private boolean receiving = false;
+    private int TIMEOUT = 50;
     private int packetsReceived = 0;
 
     // Layers
+    private final AudioLayer audioLayer = new AudioLayer();
     private final VoipLayer voipLayer = new VoipLayer();
     private final Securitylayer securitylayer = new Securitylayer();
 
@@ -33,11 +35,13 @@ public class Receiver implements Runnable{
     public Receiver() throws LineUnavailableException, SocketException {
         this.PORT = 55555;
         this.SOCKET = new DatagramSocket(this.PORT);
+        this.SOCKET.setSoTimeout(TIMEOUT);
     }
 
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
         this.PORT = PORT;
         this.SOCKET = new DatagramSocket(this.PORT);
+        this.SOCKET.setSoTimeout(TIMEOUT);
     }
 
     public void toggleReceiving(){
@@ -58,19 +62,21 @@ public class Receiver implements Runnable{
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
-            // Receives packet
+            // Waits to recieve a packet for 32ms
             SOCKET.receive(packet);
-
+            System.out.println("Receive");
 
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
 
-            // Extracts audio data from packet
-            //System.arraycopy(buffer,Analyzer.HEADER_LENGTH, audioData, 0, 512);
-            // Log Packet
-            //Analyzer.logPacket(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("TIMEOUT");
+        }
+
+
+        if(voipLayer.allowPlaying()) {
+            System.out.println("Play");
+            audioLayer.removeHeader(voipLayer.getAudioBlock());
         }
     }
 }

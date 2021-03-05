@@ -9,13 +9,21 @@ import java.io.IOException;
 public class AudioUtils {
 
     private static AudioRecorder RECORDER = null;
-    public static VoicePlayer PLAYER = null;
+    private static AudioPlayer PLAYER = null;
 
     static {
         try {
             RECORDER = new AudioRecorder();
-            PLAYER = new VoicePlayer();
+            PLAYER = new AudioPlayer();
         } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void play(byte[] audioBlock){
+        try{
+            PLAYER.playBlock(audioBlock);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

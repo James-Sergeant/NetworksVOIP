@@ -91,11 +91,14 @@ public class Sender implements Runnable{
     public void sendDatagramSocketOne() throws AlreadySendingException {
         if(sending){throw  new AlreadySendingException();}
         toggleSending();
+        int i = 0;
         while(sending){
             DatagramPacket packet = createPacket();
 
             try {
-                SENDER_SOCKET.send(packet);
+                if(i++ % 2 == 0) {
+                    SENDER_SOCKET.send(packet);
+                }
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }

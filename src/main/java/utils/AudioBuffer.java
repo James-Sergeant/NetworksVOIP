@@ -9,28 +9,30 @@ public class AudioBuffer {
 
     private final int MAX_PACKET_NUM = 255;
     private final int HEAD_ROOM = 8;
-
-    private final double BUFFER_DELAY; // Seconds
-    public final int BUFFER_LENGTH;
+    private final int BUFFER_LENGTH;
     private final Vector<byte[]> BUFFER;
     private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
 
     private int startPacketNumber;
     private int endPacketNumber;
-    private Integer currentLength;
+    private int currentLength;
+    private boolean refill;
 
     public AudioBuffer(double buffer_delay){
-        BUFFER_DELAY = buffer_delay;
-        BUFFER_LENGTH = (int)Math.ceil(BUFFER_DELAY/BLOCK_LENGTH);
+        BUFFER_LENGTH = (int)Math.ceil(buffer_delay/BLOCK_LENGTH);
         BUFFER = new Vector<>();
 
         startPacketNumber = 0;
         endPacketNumber = BUFFER_LENGTH-1;
         currentLength = 0;
+        refill = true;
 
+        /*
         for(int i = 0; i < BUFFER_LENGTH; i++){
             BUFFER.add(null);
         }
+
+         */
     }
 
     public void insertBlock(int packetNumber, byte[] block){
@@ -51,7 +53,7 @@ public class AudioBuffer {
             // INSERT INTO BUFFER
             int bufferIndex = calculateBufferIndex(packetNumber);
             BUFFER.set(bufferIndex, block);
-            synchronized (currentLength){ currentLength++;}
+            currentLength++;
             Logger.log("#1: "+bufferIndex);
             Logger.log(this);
         }else if(isWithinExtraHeadRoom(packetNumber)){
@@ -62,10 +64,12 @@ public class AudioBuffer {
             // INSERT INTO BUFFER
             int bufferIndex = calculateBufferIndex(packetNumber);
             BUFFER.set(bufferIndex, block);
-            synchronized (currentLength){ currentLength++;}
+            currentLength++;
             Logger.log("#2");
             Logger.log(this);
         }
+
+        if(currentLength >= 14) refill = false;
     }
 
     private void firstPacketSetup(int packetNumber){
@@ -126,12 +130,13 @@ public class AudioBuffer {
 
         BUFFER.remove(0);
         BUFFER.add(null);
+        currentLength--;
 
-        synchronized (currentLength) {
-            currentLength--;
-        }
+        if(isEmpty()) refill = true;
+
 
         Logger.log("POP: "+ startPacketNumber);
+        Logger.log(this);
 
 
         return block == null ? EMPTY_AUDIO_BLOCK : block;
@@ -142,12 +147,12 @@ public class AudioBuffer {
         return pointer + 1;
     }
 
-    public int size(){
-        return currentLength;
+    public boolean isEmpty(){
+        return currentLength == 0;
     }
 
-    public boolean isEmpty(){
-        synchronized (currentLength) {return currentLength == 0;}
+    public boolean isRefilling(){
+        return refill;
     }
 
     @Override
