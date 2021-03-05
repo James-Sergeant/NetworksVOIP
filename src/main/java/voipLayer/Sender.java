@@ -34,7 +34,7 @@ public class Sender implements Runnable{
     public Sender() throws UnknownHostException, SocketException, LineUnavailableException {
         PORT = 55555;
         IP = InetAddress.getByName("localhost");
-        SENDER_SOCKET = new DatagramSocket();
+        SENDER_SOCKET = new DatagramSocket3();
     }
 
     /**
@@ -47,7 +47,7 @@ public class Sender implements Runnable{
     public Sender(String IP) throws UnknownHostException, SocketException, LineUnavailableException {
         PORT = 55555;
         this.IP = InetAddress.getByName(IP);
-        SENDER_SOCKET = new DatagramSocket();
+        SENDER_SOCKET = new DatagramSocket3();
     }
 
     /**
@@ -61,7 +61,7 @@ public class Sender implements Runnable{
     public Sender(String IP,int PORT) throws UnknownHostException, SocketException, LineUnavailableException {
         this.PORT = PORT;
         this.IP = InetAddress.getByName(IP);
-        SENDER_SOCKET = new DatagramSocket();
+        SENDER_SOCKET = new DatagramSocket3();
     }
 
     /**

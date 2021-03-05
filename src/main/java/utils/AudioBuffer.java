@@ -67,19 +67,6 @@ public class AudioBuffer {
         }
     }
 
-    private boolean isWithinExtraHeadRoom(int packetNumber){
-        if(packetNumber >= startPacketNumber){
-            if(packetNumber <= endPacketNumber + HEAD_ROOM){
-                return true;
-            }else if(packetNumber <= MAX_PACKET_NUM){
-                return true;
-            }
-        }else if(packetNumber <= endPacketNumber + HEAD_ROOM){
-            return true;
-        }
-        return false;
-    }
-
 
     private int calculateBufferIndex(int packetNumber){
         Logger.log("s ="+ startPacketNumber + ", e = "+endPacketNumber);
@@ -90,7 +77,7 @@ public class AudioBuffer {
             }else if(startPacketNumber > endPacketNumber && packetNumber <= MAX_PACKET_NUM){
                 return packetNumber - startPacketNumber;
             }
-        }else if(packetNumber <= endPacketNumber){
+        }else if(endPacketNumber < startPacketNumber){
             return (MAX_PACKET_NUM - startPacketNumber) + packetNumber;
         }
 
@@ -117,7 +104,7 @@ public class AudioBuffer {
         return block == null ? EMPTY_AUDIO_BLOCK : block;
     }
 
-    private synchronized int nextPointer(int pointer){
+    private int nextPointer(int pointer){
         if(pointer == MAX_PACKET_NUM) return 0;
         return pointer + 1;
     }

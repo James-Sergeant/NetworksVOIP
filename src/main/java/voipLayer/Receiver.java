@@ -19,7 +19,7 @@ public class Receiver implements Runnable{
     private final DatagramSocket SOCKET;
     private final int PORT;
     private boolean receiving = false;
-    private int TIMEOUT = 0;
+    private int TIMEOUT = 32;
     private int packetsReceived = 0;
 
     // Layers
@@ -34,13 +34,13 @@ public class Receiver implements Runnable{
      */
     public Receiver() throws LineUnavailableException, SocketException {
         this.PORT = 55555;
-        this.SOCKET = new DatagramSocket(this.PORT);
+        this.SOCKET = new DatagramSocket3(this.PORT);
         this.SOCKET.setSoTimeout(TIMEOUT);
     }
 
     public Receiver(int PORT) throws LineUnavailableException, SocketException {
         this.PORT = PORT;
-        this.SOCKET = new DatagramSocket(this.PORT);
+        this.SOCKET = new DatagramSocket3(this.PORT);
         this.SOCKET.setSoTimeout(TIMEOUT);
     }
 
