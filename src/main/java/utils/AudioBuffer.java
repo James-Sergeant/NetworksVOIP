@@ -19,7 +19,7 @@ public class AudioBuffer {
     private boolean refill;
 
     public AudioBuffer(double buffer_delay){
-        BUFFER_LENGTH = (int)Math.ceil(buffer_delay/BLOCK_LENGTH);
+        BUFFER_LENGTH = (int)Math.ceil(buffer_delay/BLOCK_LENGTH) + HEAD_ROOM;
         BUFFER = new Vector<>();
 
         startPacketNumber = 0;
@@ -27,56 +27,41 @@ public class AudioBuffer {
         currentLength = 0;
         refill = true;
 
-        /*
-        for(int i = 0; i < BUFFER_LENGTH; i++){
-            BUFFER.add(null);
-        }
-
-         */
     }
 
     public void insertBlock(int packetNumber, byte[] block){
-        /*
-            Check if packet number within buffer range
-            If True ->  insert into correct slot
-            if false:
-                Check if to add extra newpacket
-                if true -> increase size of buffer and insert at end
-                if false:
-                    discard packet
-         */
 
         if(isEmpty()) firstPacketSetup(packetNumber);
-
         Logger.log("Packet Num: "+packetNumber);
+
         if(isWithinRange(packetNumber)){
             // INSERT INTO BUFFER
-            int bufferIndex = calculateBufferIndex(packetNumber);
-            BUFFER.set(bufferIndex, block);
-            currentLength++;
-            Logger.log("#1: "+bufferIndex);
-            Logger.log(this);
-        }else if(isWithinExtraHeadRoom(packetNumber)){
-            for(int i = 0; i < HEAD_ROOM; i++){
-                BUFFER.add(null);
-                endPacketNumber = nextPointer(endPacketNumber);
-            }
-            // INSERT INTO BUFFER
-            int bufferIndex = calculateBufferIndex(packetNumber);
-            BUFFER.set(bufferIndex, block);
-            currentLength++;
-            Logger.log("#2");
+            addBlock(packetNumber, block);
+
             Logger.log(this);
         }
 
-        if(currentLength >= 14) refill = false;
+        if(currentLength >= BUFFER_LENGTH - HEAD_ROOM) refill = false;
+    }
+
+    private void addBlock(int packetNumber, byte[] block){
+        int bufferIndex = calculateBufferIndex(packetNumber);
+
+        if(bufferIndex > BUFFER.size()){
+            for(int i = BUFFER.size(); i < bufferIndex; i++){
+                BUFFER.add(null);
+                currentLength++;
+            }
+        }
+        BUFFER.add(block);
+        currentLength++;
+        Logger.log("#1: "+bufferIndex);
     }
 
     private void firstPacketSetup(int packetNumber){
-        System.out.println("START");
         startPacketNumber = packetNumber;
         endPacketNumber = packetNumber;
-        for(int i = 0; i < BUFFER.size()-1; i++){
+        for(int i = 0; i < BUFFER_LENGTH; i++){
             endPacketNumber = nextPointer(endPacketNumber);
         }
     }
@@ -96,6 +81,7 @@ public class AudioBuffer {
 
     private boolean isWithinRange(int packetNumber){
         Logger.log("s ="+ startPacketNumber + ", e = "+endPacketNumber);
+
         if(packetNumber >= startPacketNumber){
             if(packetNumber <= endPacketNumber){
                 return true;
@@ -109,10 +95,12 @@ public class AudioBuffer {
     }
 
     private int calculateBufferIndex(int packetNumber){
+        Logger.log("s ="+ startPacketNumber + ", e = "+endPacketNumber);
+
         if(packetNumber >= startPacketNumber){
             if(packetNumber <= endPacketNumber){
                 return packetNumber - startPacketNumber;
-            }else if(packetNumber <= MAX_PACKET_NUM){
+            }else if(startPacketNumber > endPacketNumber && packetNumber <= MAX_PACKET_NUM){
                 return packetNumber - startPacketNumber;
             }
         }else if(packetNumber <= endPacketNumber){
@@ -129,7 +117,6 @@ public class AudioBuffer {
         endPacketNumber = nextPointer(endPacketNumber);
 
         BUFFER.remove(0);
-        BUFFER.add(null);
         currentLength--;
 
         if(isEmpty()) refill = true;

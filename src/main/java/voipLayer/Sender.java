@@ -96,9 +96,9 @@ public class Sender implements Runnable{
             DatagramPacket packet = createPacket();
 
             try {
-                if(i++ % 2 == 0) {
-                    SENDER_SOCKET.send(packet);
-                }
+
+                SENDER_SOCKET.send(packet);
+
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
             }
