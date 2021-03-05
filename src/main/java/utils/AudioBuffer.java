@@ -13,6 +13,7 @@ public class AudioBuffer {
     private final double BUFFER_DELAY; // Seconds
     public final int BUFFER_LENGTH;
     private final Vector<byte[]> BUFFER;
+    private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
 
     private int startPacketNumber;
     private int endPacketNumber;
@@ -119,22 +120,21 @@ public class AudioBuffer {
 
     public byte[] popBlock(){
         byte[] block = BUFFER.get(0);
-        //System.out.println(block);
-        //if(block == null) {
-            startPacketNumber = nextPointer(startPacketNumber);
-            endPacketNumber = nextPointer(endPacketNumber);
 
-            BUFFER.remove(0);
-            BUFFER.add(null);
+        startPacketNumber = nextPointer(startPacketNumber);
+        endPacketNumber = nextPointer(endPacketNumber);
 
-            synchronized (currentLength) {
-                currentLength--;
-            }
+        BUFFER.remove(0);
+        BUFFER.add(null);
 
-            Logger.log("POP: "+ startPacketNumber);
-        //}
+        synchronized (currentLength) {
+            currentLength--;
+        }
 
-        return block == null ? new byte[512] : block;
+        Logger.log("POP: "+ startPacketNumber);
+
+
+        return block == null ? EMPTY_AUDIO_BLOCK : block;
     }
 
     private synchronized int nextPointer(int pointer){

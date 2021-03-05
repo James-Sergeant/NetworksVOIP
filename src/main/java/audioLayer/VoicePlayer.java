@@ -12,7 +12,6 @@ public class VoicePlayer extends AudioPlayer implements Runnable{
     private final Vector<byte[]> BUFFER;
     private boolean playing = true;
 
-    private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
     private volatile byte[] audioBlock;
 
     public VoicePlayer() throws LineUnavailableException {
