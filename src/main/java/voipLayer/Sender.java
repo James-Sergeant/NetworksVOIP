@@ -25,7 +25,7 @@ public class Sender implements Runnable{
 
     // Interleaving
     private final BlockInterleaver interleaver = new BlockInterleaver(4);
-    private boolean interleave = true;
+    private boolean interleave = false;
 
     /**
      * Creates a default sender using localhost and the port 55555
