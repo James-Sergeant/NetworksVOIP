@@ -1,4 +1,4 @@
-package voipLayer.solutions;
+package voipLayer;
 
 import org.checkerframework.checker.units.qual.A;
 import utils.AudioBuffer;
@@ -26,8 +26,6 @@ public class BlockInterleaver {
 
     public void addPacket(DatagramPacket block){
         int index = calculateInterleavedIndex() + (d*d*bufferSwitch);
-        //System.out.println("index "+index);
-        //System.out.println("bufferSwitch "+bufferSwitch);
         buffer[index] = block;
         incrementCounters();
     }

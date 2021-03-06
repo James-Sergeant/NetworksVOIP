@@ -117,7 +117,7 @@ public class AudioBuffer {
         Logger.log(this);
 
 
-        return block == null ? EMPTY_AUDIO_BLOCK : block;
+        return block;
     }
 
     private int nextPointer(int pointer){
