@@ -13,14 +13,14 @@ public class VoipLayer extends Layer {
 
     private static final long[] packetTimes = new long[256];
 
-    private static final AudioBuffer BUFFER = new AudioBuffer(0.5);
+    private static final AudioBuffer BUFFER = new AudioBuffer(1.0, 255);
 
     public VoipLayer(){
         header = new byte[2];
     }
 
     /**
-     * Adds the current packetNumber and last recieved packet number to the packet's payload. It increments packetNumber.
+     * Adds the current packetNumber and last received packet number to the packet's payload. It increments packetNumber.
      * @param payload byte[]: The packet's payload that needs a header prepended to
      * @return
      */
@@ -50,7 +50,7 @@ public class VoipLayer extends Layer {
         receivedPacketNumber = header[0];
 
         // ADD TO BUFFER
-        BUFFER.insertBlock(receivedPacketNumber, super.removeHeader(payload));
+        BUFFER.insertBlock(getPacketTimeIndex(receivedPacketNumber), super.removeHeader(payload));
 
         // DELAY
         calculateDelay();
@@ -89,7 +89,6 @@ public class VoipLayer extends Layer {
         //System.out.println("RECEIVED " + receivedPacketNumber);
         int packetsLost = receivedPacketNumber - (prevReceivedPacketNumber+1);
         if(packetsLost > 0){
-            System.out.println(receivedPacketNumber+ " "+ prevReceivedPacketNumber);
             System.out.println("Packets Lost : "+packetsLost+" packets");
         }
     }

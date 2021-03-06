@@ -7,7 +7,7 @@ import static audioLayer.AudioLayer.BLOCK_SIZE;
 
 public class AudioBuffer {
 
-    private final int MAX_PACKET_NUM = 255;
+    private final int MAX_PACKET_NUM;
     private final int HEAD_ROOM = 8;
     private final int BUFFER_LENGTH;
     private final Vector<byte[]> BUFFER;
@@ -18,7 +18,8 @@ public class AudioBuffer {
     private int currentLength;
     private boolean refill;
 
-    public AudioBuffer(double buffer_delay){
+    public AudioBuffer(double buffer_delay, int maxPacketNumber){
+        MAX_PACKET_NUM = maxPacketNumber;
         BUFFER_LENGTH = (int)Math.ceil(buffer_delay/BLOCK_LENGTH) + HEAD_ROOM;
         BUFFER = new Vector<>();
 
@@ -26,7 +27,17 @@ public class AudioBuffer {
         endPacketNumber = BUFFER_LENGTH-1;
         currentLength = 0;
         refill = true;
+    }
 
+    public AudioBuffer(int buffer_length, int maxPacketNumber){
+        MAX_PACKET_NUM = maxPacketNumber;
+        BUFFER_LENGTH = buffer_length;
+        BUFFER = new Vector<>();
+
+        startPacketNumber = 0;
+        endPacketNumber = BUFFER_LENGTH-1;
+        currentLength = 0;
+        refill = true;
     }
 
     public void insertBlock(int packetNumber, byte[] block){
@@ -36,13 +47,18 @@ public class AudioBuffer {
 
         int bufferIndex = calculateBufferIndex(packetNumber);
         if(bufferIndex != -1){ // If packet number within range
+            Logger.log("BufferIndex = "+bufferIndex + " currentLength = "+currentLength);
             // If packet number is greater than vector length add nulls
             if(bufferIndex > BUFFER.size()){
                 increaseBufferSizeTo(bufferIndex);
+                BUFFER.add(block);
+                currentLength++;
+            }else if(isEmpty() || bufferIndex == currentLength){
+                BUFFER.add(block);
+                currentLength++;
+            }else{
+                BUFFER.setElementAt(block, bufferIndex);
             }
-            // INSERT INTO BUFFER
-            BUFFER.add(block);
-            currentLength++;
 
             Logger.log(this);
         }
@@ -77,7 +93,7 @@ public class AudioBuffer {
             }else if(startPacketNumber > endPacketNumber && packetNumber <= MAX_PACKET_NUM){
                 return packetNumber - startPacketNumber;
             }
-        }else if(endPacketNumber < startPacketNumber){
+        }else if(endPacketNumber < startPacketNumber && packetNumber <= endPacketNumber){
             return (MAX_PACKET_NUM - startPacketNumber) + packetNumber;
         }
 
@@ -131,7 +147,7 @@ public class AudioBuffer {
     }
 
     public static void main(String[] args) {
-        AudioBuffer buffer = new AudioBuffer(0.5);
+        AudioBuffer buffer = new AudioBuffer(0.5, 255);
         byte[] testBlock = new byte[1];
 
         // TESTING SIMPLE INSERTING AND POPPING BLOCKS

@@ -1,29 +1,31 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import com.Main;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
+import voipLayer.solutions.BlockInterleaver;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 
 public class Sender implements Runnable{
-    public static byte DATAGRAM_SOCKET_ONE = 0;
-    public static byte DATAGRAM_SOCKET_TWO = 1;
-    public static byte DATAGRAM_SOCKET_THREE = 2;
 
-    private boolean sending = false;
+    private boolean sending = true;
     private final int PORT;
     private final InetAddress IP;
-    private final DatagramSocket SENDER_SOCKET;
+    private DatagramSocket SENDER_SOCKET;
 
     // Layers
     private final AudioLayer audioLayer = new AudioLayer();
     private final VoipLayer voipLayer = new VoipLayer();
     private final Securitylayer securitylayer = new Securitylayer();
 
+    // Interleaving
+    private final BlockInterleaver interleaver = new BlockInterleaver(4);
+    private boolean interleave = true;
 
     /**
      * Creates a default sender using localhost and the port 55555
@@ -34,7 +36,7 @@ public class Sender implements Runnable{
     public Sender() throws UnknownHostException, SocketException, LineUnavailableException {
         PORT = 55555;
         IP = InetAddress.getByName("localhost");
-        SENDER_SOCKET = new DatagramSocket3();
+        setSocket();
     }
 
     /**
@@ -47,7 +49,7 @@ public class Sender implements Runnable{
     public Sender(String IP) throws UnknownHostException, SocketException, LineUnavailableException {
         PORT = 55555;
         this.IP = InetAddress.getByName(IP);
-        SENDER_SOCKET = new DatagramSocket3();
+        setSocket();
     }
 
     /**
@@ -61,7 +63,20 @@ public class Sender implements Runnable{
     public Sender(String IP,int PORT) throws UnknownHostException, SocketException, LineUnavailableException {
         this.PORT = PORT;
         this.IP = InetAddress.getByName(IP);
-        SENDER_SOCKET = new DatagramSocket3();
+        setSocket();
+    }
+
+    private void setSocket() throws SocketException {
+        switch(Main.DATAGRAM_SOCKET){
+            case 2:
+                SENDER_SOCKET = new DatagramSocket2();
+                break;
+            case 3:
+                SENDER_SOCKET = new DatagramSocket3();
+                break;
+            default:
+                SENDER_SOCKET = new DatagramSocket();
+        }
     }
 
     /**
@@ -70,10 +85,19 @@ public class Sender implements Runnable{
     @Override
     public void run() {
         System.out.println("Running Sender...");
-        try {
-            sendDatagramSocketOne();
-        } catch (AlreadySendingException e) {
-            System.out.println("There is already a sender thread running for this object.");
+        while(sending){
+            DatagramPacket packet = createPacket();
+            try {
+                if(interleave){
+                    DatagramPacket packetToSend = interleaver.popPacket();
+                    if(packetToSend != null) SENDER_SOCKET.send(packetToSend);
+                    interleaver.addPacket(packet);
+                }else {
+                    SENDER_SOCKET.send(packet);
+                }
+            } catch (IOException e) {
+                System.out.println("Failed to send packet...");
+            }
         }
     }
 
@@ -84,26 +108,6 @@ public class Sender implements Runnable{
         sending ^= true;
     }
 
-    /**
-     * Sends the data using the Datagram Socket One.
-     * @throws AlreadySendingException
-     */
-    public void sendDatagramSocketOne() throws AlreadySendingException {
-        if(sending){throw  new AlreadySendingException();}
-        toggleSending();
-        int i = 0;
-        while(sending){
-            DatagramPacket packet = createPacket();
-
-            try {
-
-                SENDER_SOCKET.send(packet);
-
-            } catch (IOException e) {
-                System.out.println("Failed to send packet...");
-            }
-        }
-    }
 
     private DatagramPacket createPacket(){
         // Create Payload Buffer
