@@ -76,14 +76,8 @@ public class VoipLayer extends Layer {
             }
             if(nextBlock != null) {
                 // Interpolate
-                audioBlock = new byte[512];
-                for (int i = 0; i < AudioLayer.BLOCK_SIZE/2; i++) {
-                    byte[] sample = Interpolator.calculateInterpolatedBlock(lastPoppedBlock, nextBlock, 256, i);
-                    audioBlock[i*2] = sample[2];
-                    audioBlock[(i*2)+1] = sample[3];
-                    System.out.println(Interpolator.blockToInt(sample[0], sample[1]));
-
-                }
+                audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, 1);
+                lastPoppedBlock = audioBlock;
             }
         }else{
             lastPoppedBlock = audioBlock;
