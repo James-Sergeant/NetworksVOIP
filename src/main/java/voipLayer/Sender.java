@@ -84,6 +84,7 @@ public class Sender implements Runnable{
     @Override
     public void run() {
         System.out.println("Running Sender...");
+        int i = 0;
         while(sending){
             DatagramPacket packet = createPacket();
             try {
@@ -92,7 +93,7 @@ public class Sender implements Runnable{
                     if(packetToSend != null) SENDER_SOCKET.send(packetToSend);
                     interleaver.addPacket(packet);
                 }else {
-                    SENDER_SOCKET.send(packet);
+                    if(i++ % 2 != 0) SENDER_SOCKET.send(packet);
                 }
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");

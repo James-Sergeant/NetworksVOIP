@@ -11,7 +11,6 @@ public class AudioBuffer {
     private final int HEAD_ROOM = 8;
     private final int BUFFER_LENGTH;
     private final Vector<byte[]> BUFFER;
-    private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
 
     private int startPacketNumber;
     private int endPacketNumber;
@@ -109,13 +108,11 @@ public class AudioBuffer {
 
         BUFFER.remove(0);
         currentLength--;
-        Logger.log("LENGTH: "+currentLength);
         if(isEmpty()) refill = true;
 
-
+        Logger.log("LENGTH: "+currentLength);
         Logger.log("POP: "+ startPacketNumber);
         Logger.log(this);
-
 
         return block;
     }
@@ -131,6 +128,14 @@ public class AudioBuffer {
 
     public boolean isRefilling(){
         return refill;
+    }
+
+    public byte[] getBlock(int index){
+        return BUFFER.get(index);
+    }
+
+    public int getLength(){
+        return BUFFER_LENGTH;
     }
 
     @Override

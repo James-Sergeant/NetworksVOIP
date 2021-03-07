@@ -16,10 +16,10 @@ public class Main {
     private static final String SERGEANT_IP = "109.147.42.239";
     private static final String BURLING_IP = "86.154.116.23";
 
-    public static final int DATAGRAM_SOCKET = 2; // 1, 2 or 3 (1 default)
+    public static final int DATAGRAM_SOCKET = 1; // 1, 2 or 3 (1 default)
     private static final int CALL_LENGTH = 50; // Seconds
 
-    public static void main(String[] args) throws LineUnavailableException, SocketException, UnknownHostException, IOException, InterruptedException {
+    public static void main(String[] args) throws LineUnavailableException, IOException, InterruptedException {
 
         Analyzer.setup(false); // Setup static Analyser
 

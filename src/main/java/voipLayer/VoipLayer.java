@@ -10,10 +10,13 @@ public class VoipLayer extends Layer {
     private byte packetNumber = 0;
     private static byte receivedPacketNumber = 0;
     private byte prevReceivedPacketNumber = 0;
-
     private static final long[] packetTimes = new long[256];
 
-    private static final AudioBuffer BUFFER = new AudioBuffer(1.0, 255);
+    // Solutions
+    private final AudioBuffer BUFFER = new AudioBuffer(1.0, 255);
+
+    private final Interpolator INTERPOLATOR = new Interpolator();
+    private byte[] lastPoppedBlock = null;
 
     public VoipLayer(){
         header = new byte[2];
@@ -62,7 +65,31 @@ public class VoipLayer extends Layer {
     }
 
     public byte[] getAudioBlock(){
-        return BUFFER.popBlock();
+        byte[] audioBlock = BUFFER.popBlock();
+
+        if(audioBlock == null){
+            // Get number of null until next audio block. Get next audio block
+            byte[] nextBlock = null;
+            int numberOfNulls = 1;
+            while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
+                nextBlock = BUFFER.getBlock(numberOfNulls++);
+            }
+            if(nextBlock != null) {
+                // Interpolate
+                audioBlock = new byte[512];
+                for (int i = 0; i < AudioLayer.BLOCK_SIZE/2; i++) {
+                    byte[] sample = Interpolator.calculateInterpolatedBlock(lastPoppedBlock, nextBlock, 256, i);
+                    audioBlock[i*2] = sample[2];
+                    audioBlock[(i*2)+1] = sample[3];
+                    System.out.println(Interpolator.blockToInt(sample[0], sample[1]));
+
+                }
+            }
+        }else{
+            lastPoppedBlock = audioBlock;
+        }
+
+        return audioBlock;
     }
 
     public boolean allowPlaying(){

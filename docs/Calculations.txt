@@ -21,3 +21,6 @@ BufferSize      = BUFFER_TIME/ 0.032
 
 Packet Interval = 1000 ms / 31.25 p/s
                 = 32 ms
+
+Audio Data      = 2^16 = 65536 max amplitude
+
