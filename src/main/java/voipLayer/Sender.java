@@ -9,6 +9,7 @@ import uk.ac.uea.cmp.voip.DatagramSocket3;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 public class Sender implements Runnable{
 
@@ -84,7 +85,9 @@ public class Sender implements Runnable{
     @Override
     public void run() {
         System.out.println("Running Sender...");
+
         int i = 0;
+
         while(sending){
             DatagramPacket packet = createPacket();
             try {
@@ -93,7 +96,7 @@ public class Sender implements Runnable{
                     if(packetToSend != null) SENDER_SOCKET.send(packetToSend);
                     interleaver.addPacket(packet);
                 }else {
-                    if(i++ % 2 != 0) SENDER_SOCKET.send(packet);
+                    if(i++ % 2 == 0)SENDER_SOCKET.send(packet);
                 }
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
@@ -118,15 +121,5 @@ public class Sender implements Runnable{
         payload = securitylayer.addHeader(payload);
 
         return new DatagramPacket(payload, payload.length,IP,PORT);
-    }
-
-
-    /**
-     * Is thrown if audio is already transmitting.
-     */
-    class AlreadySendingException extends Exception{
-        AlreadySendingException(){
-            super("Audio already transmitting");
-        }
     }
 }

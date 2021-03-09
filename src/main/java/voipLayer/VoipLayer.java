@@ -3,6 +3,7 @@ package voipLayer;
 import audioLayer.AudioLayer;
 import com.Layer;
 import utils.AudioBuffer;
+import utils.Logger;
 
 public class VoipLayer extends Layer {
 
@@ -17,6 +18,7 @@ public class VoipLayer extends Layer {
 
     private final Interpolator INTERPOLATOR = new Interpolator();
     private byte[] lastPoppedBlock = null;
+    private int nullCount = 0;
 
     public VoipLayer(){
         header = new byte[2];
@@ -70,16 +72,32 @@ public class VoipLayer extends Layer {
         if(audioBlock == null){
             // Get number of null until next audio block. Get next audio block
             byte[] nextBlock = null;
-            int numberOfNulls = 1;
+            int numberOfNulls = 0;
             while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
                 nextBlock = BUFFER.getBlock(numberOfNulls++);
             }
             if(nextBlock != null) {
                 // Interpolate
-                audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, 1);
-                lastPoppedBlock = audioBlock;
+                audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
+                /*
+                for(int i = 0; i < 256; i++){
+                    System.out.println(Interpolator.blockToShort(lastPoppedBlock[i*2],lastPoppedBlock[(i*2)+1]));
+                }
+                System.out.println("===============================================");
+                for(int i = 0; i < 256; i++){
+                    System.out.println(Interpolator.blockToShort(audioBlock[i*2],audioBlock[(i*2)+1]));
+                }
+                System.out.println("===============================================");
+                for(int i = 0; i < 256; i++){
+                    System.out.println(Interpolator.blockToShort(nextBlock[i*2],nextBlock[(i*2)+1]));
+                }
+                System.out.println("DONE");
+                */
+
+                //lastPoppedBlock = audioBlock;
             }
         }else{
+            nullCount = 0;
             lastPoppedBlock = audioBlock;
         }
 
@@ -110,7 +128,7 @@ public class VoipLayer extends Layer {
         //System.out.println("RECEIVED " + receivedPacketNumber);
         int packetsLost = receivedPacketNumber - (prevReceivedPacketNumber+1);
         if(packetsLost > 0){
-            System.out.println("Packets Lost : "+packetsLost+" packets");
+            Logger.log("Packets Lost : " + packetsLost + " packets");
         }
     }
 
