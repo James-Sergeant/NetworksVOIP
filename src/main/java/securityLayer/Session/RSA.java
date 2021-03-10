@@ -157,7 +157,7 @@ public class RSA {
      * @param args
      */
     public static void main(String[] args) {
-        int msg = 1000;
+        int msg = 500;
         RSA rsa = new RSA();
 
         double encryptedMsg = rsa.encrypt(msg,rsa.publicKey);
