@@ -1,5 +1,6 @@
 package securityLayer.Session;
 
+import audioLayer.AudioUtils;
 import utils.Utils;
 
 import java.math.BigInteger;
@@ -41,5 +42,10 @@ public class Session {
         byte[] cypherText = session.encryptDecryptAudio(testArray);
         Utils.printByteArray(cypherText);
         Utils.printByteArray(session.encryptDecryptAudio(cypherText));
+
+        System.out.println("Test Sound");
+        while (true){
+            AudioUtils.play(session.encryptDecryptAudio(AudioUtils.record()));
+        }
     }
 }
