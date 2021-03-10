@@ -96,7 +96,7 @@ public class Sender implements Runnable{
                     if(packetToSend != null) SENDER_SOCKET.send(packetToSend);
                     interleaver.addPacket(packet);
                 }else {
-                    if(i++ % 2 == 0)SENDER_SOCKET.send(packet);
+                    SENDER_SOCKET.send(packet);
                 }
             } catch (IOException e) {
                 System.out.println("Failed to send packet...");
