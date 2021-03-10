@@ -1,6 +1,7 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import com.Config;
 import com.Layer;
 import utils.AudioBuffer;
 import utils.Logger;
@@ -14,7 +15,7 @@ public class VoipLayer extends Layer {
     private static final long[] packetTimes = new long[256];
 
     // Solutions
-    private final AudioBuffer BUFFER = new AudioBuffer(1.0, 255);
+    private final AudioBuffer BUFFER = new AudioBuffer(Config.BUFFER_DELAY, 255);
 
     private final Interpolator INTERPOLATOR = new Interpolator();
     private byte[] lastPoppedBlock = null;
@@ -69,7 +70,7 @@ public class VoipLayer extends Layer {
     public byte[] getAudioBlock(){
         byte[] audioBlock = BUFFER.popBlock();
 
-        if(audioBlock == null){
+        if(audioBlock == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.INTERPOLATION){
             // Get number of null until next audio block. Get next audio block
             byte[] nextBlock = null;
             int numberOfNulls = 0;
@@ -79,22 +80,6 @@ public class VoipLayer extends Layer {
             if(nextBlock != null) {
                 // Interpolate
                 audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
-                /*
-                for(int i = 0; i < 256; i++){
-                    System.out.println(Interpolator.blockToShort(lastPoppedBlock[i*2],lastPoppedBlock[(i*2)+1]));
-                }
-                System.out.println("===============================================");
-                for(int i = 0; i < 256; i++){
-                    System.out.println(Interpolator.blockToShort(audioBlock[i*2],audioBlock[(i*2)+1]));
-                }
-                System.out.println("===============================================");
-                for(int i = 0; i < 256; i++){
-                    System.out.println(Interpolator.blockToShort(nextBlock[i*2],nextBlock[(i*2)+1]));
-                }
-                System.out.println("DONE");
-                */
-
-                //lastPoppedBlock = audioBlock;
             }
         }else{
             nullCount = 0;

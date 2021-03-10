@@ -1,6 +1,7 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import com.Config;
 import com.Main;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
@@ -44,7 +45,7 @@ public class Receiver implements Runnable{
 
     
     private void setSocket() throws SocketException {
-        switch(Main.DATAGRAM_SOCKET){
+        switch(Config.DATAGRAM_SOCKET){
             case 2:
                 this.RECEIVER_SOCKET = new DatagramSocket2(PORT);
                 break;

@@ -1,6 +1,7 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import com.Config;
 import com.Main;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
@@ -24,8 +25,7 @@ public class Sender implements Runnable{
     private final Securitylayer securitylayer = new Securitylayer();
 
     // Interleaving
-    private final BlockInterleaver interleaver = new BlockInterleaver(4);
-    private boolean interleave = false;
+    private final BlockInterleaver interleaver = new BlockInterleaver(Config.INTERLEAVER_SIZE);
 
     /**
      * Creates a default sender using localhost and the port 55555
@@ -67,7 +67,7 @@ public class Sender implements Runnable{
     }
 
     private void setSocket() throws SocketException {
-        switch(Main.DATAGRAM_SOCKET){
+        switch(Config.DATAGRAM_SOCKET){
             case 2:
                 SENDER_SOCKET = new DatagramSocket2();
                 break;
@@ -91,7 +91,7 @@ public class Sender implements Runnable{
         while(sending){
             DatagramPacket packet = createPacket();
             try {
-                if(interleave){
+                if(Config.INTERLEAVER){
                     DatagramPacket packetToSend = interleaver.popPacket();
                     if(packetToSend != null) SENDER_SOCKET.send(packetToSend);
                     interleaver.addPacket(packet);

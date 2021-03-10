@@ -1,5 +1,7 @@
 package utils;
 
+import com.Config;
+
 import java.util.Vector;
 
 import static audioLayer.AudioLayer.BLOCK_LENGTH;
@@ -44,24 +46,28 @@ public class AudioBuffer {
         if(isEmpty()) firstPacketSetup(packetNumber);
         Logger.log("Packet Num: "+packetNumber);
 
-        int bufferIndex = calculateBufferIndex(packetNumber);
-        if(bufferIndex != -1){ // If packet number within range
-            Logger.log("BufferIndex = "+bufferIndex + " currentLength = "+currentLength);
-            // If packet number is greater than vector length add nulls
-            if(bufferIndex > BUFFER.size()){
-                increaseBufferSizeTo(bufferIndex);
-                BUFFER.add(block);
-                currentLength++;
-            }else if(isEmpty() || bufferIndex == currentLength){
-                BUFFER.add(block);
-                currentLength++;
-            }else{
-                BUFFER.setElementAt(block, bufferIndex);
+        if(Config.REORDER) {
+            int bufferIndex = calculateBufferIndex(packetNumber);
+            if (bufferIndex != -1) { // If packet number within range
+                Logger.log("BufferIndex = " + bufferIndex + " currentLength = " + currentLength);
+                // If packet number is greater than vector length add nulls
+                if (bufferIndex > BUFFER.size()) {
+                    increaseBufferSizeTo(bufferIndex);
+                    BUFFER.add(block);
+                    currentLength++;
+                } else if (isEmpty() || bufferIndex == currentLength) {
+                    BUFFER.add(block);
+                    currentLength++;
+                } else {
+                    BUFFER.setElementAt(block, bufferIndex);
+                }
+
+                Logger.log(this);
             }
-
-            Logger.log(this);
+        }else{
+            BUFFER.add(block);
+            currentLength++;
         }
-
         if(currentLength >= BUFFER_LENGTH - HEAD_ROOM) refill = false;
     }
 

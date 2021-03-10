@@ -1,5 +1,6 @@
 package audioLayer;
 
+import com.Config;
 import com.Layer;
 import voipLayer.Interpolator;
 
@@ -15,8 +16,6 @@ public class AudioLayer extends Layer {
     private byte[] noiseBlock = AudioUtils.generateNoiseBlock();
     private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
 
-    // Solutions
-    private static final boolean REPETITION = true;
 
     public AudioLayer() {
         header = new byte[512];
@@ -32,9 +31,9 @@ public class AudioLayer extends Layer {
     @Override
     public byte[] removeHeader(byte[] payload) {
         // If packet's audio data was lost
-        if(payload == null && REPETITION){ // REPETITION
+        if(payload == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.REPETITION){ // REPETITION
             payload = prevAudio;
-        }else{
+        }else if(payload == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.BLANK_FILL_IN) {
             prevAudio = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
         }
 
