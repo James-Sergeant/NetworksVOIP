@@ -31,21 +31,20 @@ public class AudioLayer extends Layer {
     @Override
     public byte[] removeHeader(byte[] payload) {
         // If packet's audio data was lost
-        if(payload == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.REPETITION){ // REPETITION
-            payload = prevAudio;
-        }else if(payload == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.BLANK_FILL_IN) {
-            prevAudio = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
+        if(payload == null){
+            if(Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.REPETITION){
+                payload = prevAudio;
+            }else if(Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.BLANK_FILL_IN){
+                payload = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
+            }else{
+                System.out.println("[ERROR] Audio Layer Payload=null");
+            }
+        }else{
+            prevAudio = payload;
         }
 
         // Get audio data from payload and add to the buffer
         extractHeader(payload);
-
-        // PRINT SAMPLES OF AUDIO DATA
-
-        for(int i = 0; i < 256; i++){
-            System.out.println(Interpolator.blockToShort(header[i],header[i+1]));
-        }
-
 
         // Send audio data to Player
         AudioUtils.play(header);
