@@ -1,6 +1,8 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import com.Config;
+import com.Main;
 import securityLayer.Securitylayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
@@ -12,15 +14,11 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 public class Receiver implements Runnable{
-    public static byte DATAGRAM_SOCKET_ONE = 0;
-    public static byte DATAGRAM_SOCKET_TWO = 1;
-    public static byte DATAGRAM_SOCKET_THREE = 2;
 
-    private final DatagramSocket SOCKET;
+    private DatagramSocket RECEIVER_SOCKET;
     private final int PORT;
     private boolean receiving = false;
     private int TIMEOUT = 32;
-    private int packetsReceived = 0;
 
     // Layers
     private final AudioLayer audioLayer = new AudioLayer();
@@ -29,21 +27,38 @@ public class Receiver implements Runnable{
 
     /**
      * The basic receiver
-     * @throws LineUnavailableException
      * @throws SocketException
      */
-    public Receiver() throws LineUnavailableException, SocketException {
+    public Receiver() throws SocketException {
         this.PORT = 55555;
-        this.SOCKET = new DatagramSocket3(this.PORT);
-        this.SOCKET.setSoTimeout(TIMEOUT);
+        setSocket();
+        this.RECEIVER_SOCKET.setSoTimeout(TIMEOUT);
+        
+        
     }
 
-    public Receiver(int PORT) throws LineUnavailableException, SocketException {
+    public Receiver(int PORT) throws SocketException {
         this.PORT = PORT;
-        this.SOCKET = new DatagramSocket3(this.PORT);
-        this.SOCKET.setSoTimeout(TIMEOUT);
+        setSocket();
+        this.RECEIVER_SOCKET.setSoTimeout(TIMEOUT);
     }
 
+    
+    private void setSocket() throws SocketException {
+        switch(Config.DATAGRAM_SOCKET){
+            case 2:
+                this.RECEIVER_SOCKET = new DatagramSocket2(PORT);
+                break;
+            case 3:
+                this.RECEIVER_SOCKET = new DatagramSocket3(PORT);
+                break;
+            default:
+                this.RECEIVER_SOCKET = new DatagramSocket(PORT);
+                break;
+        }
+    }
+    
+    
     public void toggleReceiving(){
         receiving ^= true;
     }
@@ -63,19 +78,16 @@ public class Receiver implements Runnable{
 
         try {
             // Waits to recieve a packet for 32ms
-            SOCKET.receive(packet);
-            System.out.println("Receive");
+            RECEIVER_SOCKET.receive(packet);
 
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
 
-        } catch (IOException e) {
-            System.out.println("TIMEOUT");
+        } catch (IOException ignored) {
         }
 
 
         if(voipLayer.allowPlaying()) {
-            System.out.println("Play");
             audioLayer.removeHeader(voipLayer.getAudioBlock());
         }
     }

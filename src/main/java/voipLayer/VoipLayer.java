@@ -1,8 +1,10 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import com.Config;
 import com.Layer;
 import utils.AudioBuffer;
+import utils.Logger;
 
 public class VoipLayer extends Layer {
 
@@ -10,17 +12,21 @@ public class VoipLayer extends Layer {
     private byte packetNumber = 0;
     private static byte receivedPacketNumber = 0;
     private byte prevReceivedPacketNumber = 0;
-
     private static final long[] packetTimes = new long[256];
 
-    private static final AudioBuffer BUFFER = new AudioBuffer(0.5);
+    // Solutions
+    private final AudioBuffer BUFFER = new AudioBuffer(Config.BUFFER_DELAY, 255);
+
+    private final Interpolator INTERPOLATOR = new Interpolator();
+    private byte[] lastPoppedBlock = null;
+    private int nullCount = 0;
 
     public VoipLayer(){
         header = new byte[2];
     }
 
     /**
-     * Adds the current packetNumber and last recieved packet number to the packet's payload. It increments packetNumber.
+     * Adds the current packetNumber and last received packet number to the packet's payload. It increments packetNumber.
      * @param payload byte[]: The packet's payload that needs a header prepended to
      * @return
      */
@@ -50,7 +56,7 @@ public class VoipLayer extends Layer {
         receivedPacketNumber = header[0];
 
         // ADD TO BUFFER
-        BUFFER.insertBlock(receivedPacketNumber, super.removeHeader(payload));
+        BUFFER.insertBlock(getPacketTimeIndex(receivedPacketNumber), super.removeHeader(payload));
 
         // DELAY
         calculateDelay();
@@ -62,7 +68,25 @@ public class VoipLayer extends Layer {
     }
 
     public byte[] getAudioBlock(){
-        return BUFFER.popBlock();
+        byte[] audioBlock = BUFFER.popBlock();
+
+        if(audioBlock == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.INTERPOLATION){
+            // Get number of null until next audio block. Get next audio block
+            byte[] nextBlock = null;
+            int numberOfNulls = 0;
+            while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
+                nextBlock = BUFFER.getBlock(numberOfNulls++);
+            }
+            if(nextBlock != null) {
+                // Interpolate
+                audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
+            }
+        }else{
+            nullCount = 0;
+            lastPoppedBlock = audioBlock;
+        }
+
+        return audioBlock;
     }
 
     public boolean allowPlaying(){
@@ -89,8 +113,7 @@ public class VoipLayer extends Layer {
         //System.out.println("RECEIVED " + receivedPacketNumber);
         int packetsLost = receivedPacketNumber - (prevReceivedPacketNumber+1);
         if(packetsLost > 0){
-            System.out.println(receivedPacketNumber+ " "+ prevReceivedPacketNumber);
-            System.out.println("Packets Lost : "+packetsLost+" packets");
+            Logger.log("Packets Lost : " + packetsLost + " packets");
         }
     }
 

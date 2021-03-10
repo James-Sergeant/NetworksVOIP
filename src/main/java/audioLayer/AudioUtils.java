@@ -5,6 +5,7 @@ import CMPC3M06.AudioRecorder;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
+import java.util.Random;
 
 public class AudioUtils {
 
@@ -20,6 +21,10 @@ public class AudioUtils {
         }
     }
 
+    /**
+     * Plays a block of audio
+     * @param audioBlock
+     */
     public static void play(byte[] audioBlock){
         try{
             PLAYER.playBlock(audioBlock);
@@ -41,5 +46,14 @@ public class AudioUtils {
             System.out.println("Failed to recoded block...");
             return new byte[0];
         }
+    }
+
+    public static byte[] generateNoiseBlock(){
+        byte[] block = new byte[AudioLayer.BLOCK_SIZE];
+        Random random = new Random();
+        for(int i = 0; i < block.length; i++){
+            block[i] = (byte) random.nextInt(256);
+        }
+        return block;
     }
 }
