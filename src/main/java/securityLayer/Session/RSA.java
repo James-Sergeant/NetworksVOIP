@@ -21,7 +21,7 @@ import java.util.Random;
 public class RSA {
     private int p=0,q=0, n, z, d = 0, e, i;
 
-    public final keyPair publicKey;
+    public final KeyPair publicKey;
 
 
     /**
@@ -36,7 +36,7 @@ public class RSA {
         z = (p - 1) * (q - 1);
         // finds e, the public key exponent.
         findPublicExponent();
-        publicKey = new keyPair(e,n);
+        publicKey = new KeyPair(e,n);
         // finds d, the private exponent.
         findPrivateExponent();
     }
@@ -47,7 +47,7 @@ public class RSA {
      * @param keyPair keyPair: The public keypair of the other user.
      * @return Double: The encrypted value of the message.
      */
-    public static double encrypt(int message, keyPair keyPair){
+    public static double encrypt(int message, KeyPair keyPair){
         return (Math.pow(message, keyPair.getExponent())) % keyPair.getN();
     }
 
@@ -123,7 +123,7 @@ public class RSA {
     /**
      * A class used to store a key pair.
      */
-    public class keyPair{
+    public static class KeyPair {
         private int Exponent;
         private int n;
 
@@ -132,7 +132,7 @@ public class RSA {
          * @param Exponent int the exponent.
          * @param n int the n value.
          */
-        keyPair(int Exponent,int n){
+        public KeyPair(int Exponent, int n){
             this.Exponent = Exponent;
             this.n = n;
         }

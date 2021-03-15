@@ -4,7 +4,7 @@ public class Config {
 
     // DATAGRAM SOCKET
 
-    public static final int DATAGRAM_SOCKET = 1; // 1, 2 or 3 (1 default)
+    public static final int DATAGRAM_SOCKET = 3; // 1, 2 or 3 (1 default)
     public static final int CALL_LENGTH = 50; // Seconds
 
     // AUDIO RECEIVING BUFFER

@@ -6,17 +6,15 @@ import uk.ac.uea.cmp.voip.DatagramSocket3;
 import voipLayer.VoipLayer;
 
 import javax.sound.sampled.LineUnavailableException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.*;
 
-public class Sender {
+public class Sender{
 
-    private boolean sending = false;
     private final int PORT;
     private final InetAddress IP;
     private final DatagramSocket SENDER_SOCKET;
+    public static boolean requestReceived = false;
 
 
     /**
@@ -57,4 +55,18 @@ public class Sender {
         this.IP = InetAddress.getByName(IP);
         SENDER_SOCKET = new DatagramSocket3();
     }
+
+    /**
+     * Sends a packet.
+     * @param data byte[]: The data to be sent.
+     */
+    public void send(byte[] data){
+        DatagramPacket datagramPacket = new DatagramPacket(data, data.length,IP,PORT);
+        try {
+            SENDER_SOCKET.send(datagramPacket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
