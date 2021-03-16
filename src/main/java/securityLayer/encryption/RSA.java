@@ -1,4 +1,4 @@
-package securityLayer.Session;
+package securityLayer.encryption;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

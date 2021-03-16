@@ -1,4 +1,4 @@
-package securityLayer.Session;
+package securityLayer.encryption;
 
 import audioLayer.AudioUtils;
 import utils.Utils;
