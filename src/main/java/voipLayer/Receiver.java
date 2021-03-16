@@ -18,7 +18,7 @@ public class Receiver implements Runnable{
     private DatagramSocket RECEIVER_SOCKET;
     private final int PORT;
     private boolean receiving = false;
-    private int TIMEOUT = 32;
+    private int TIMEOUT = Config.TIMEOUT;
 
     // Layers
     private final AudioLayer audioLayer = new AudioLayer();

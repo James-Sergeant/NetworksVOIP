@@ -17,7 +17,6 @@ public class VoipLayer extends Layer {
     // Solutions
     private final AudioBuffer BUFFER = new AudioBuffer(Config.BUFFER_DELAY, 255);
 
-    private final Interpolator INTERPOLATOR = new Interpolator();
     private byte[] lastPoppedBlock = null;
     private int nullCount = 0;
 
