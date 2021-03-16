@@ -1,7 +1,7 @@
 package utils;
 
 public class Logger {
-    private static boolean logging = false;
+    private static boolean logging = true;
 
     public static void toggleLogging(){
         logging ^= true;
