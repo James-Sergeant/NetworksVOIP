@@ -32,7 +32,7 @@ public class Main {
 
     public static void main(String[] args) throws LineUnavailableException, IOException, InterruptedException {
 
-        Config.preset = Config.PRESET.SOCKET2;
+        Config.preset = Config.PRESET.SOCKET1;
 
         Analyzer.setup(false); // Setup static Analyser
 

@@ -42,4 +42,8 @@ public class Utils {
             System.out.println(b++);
         }
     }
+
+    public static short blockToShort(byte byte1, byte byte2){
+        return (short) ( ((byte2 & 0xFF) << 8) | (byte1 & 0xFF));
+    }
 }

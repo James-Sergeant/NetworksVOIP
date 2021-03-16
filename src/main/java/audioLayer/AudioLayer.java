@@ -2,7 +2,6 @@ package audioLayer;
 
 import com.Config;
 import com.Layer;
-import voipLayer.Interpolator;
 
 public class AudioLayer extends Layer {
 
@@ -61,7 +60,7 @@ public class AudioLayer extends Layer {
             extractHeader(audioBlock);
 
             // Send audio data to Player
-            AudioUtils.play(header);
+            AudioUtils.play(AudioUtils.removeLowerAudio(header));
         }
         return null;
     }
