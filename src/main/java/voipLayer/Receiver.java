@@ -18,7 +18,7 @@ public class Receiver implements Runnable{
     private DatagramSocket RECEIVER_SOCKET;
     private final int PORT;
     private boolean receiving = false;
-    private int TIMEOUT = 32;
+    private int TIMEOUT = Config.preset.getTIMEOUT();
 
     // Layers
     private final AudioLayer audioLayer = new AudioLayer();
@@ -45,7 +45,7 @@ public class Receiver implements Runnable{
 
     
     private void setSocket() throws SocketException {
-        switch(Config.DATAGRAM_SOCKET){
+        switch(Config.preset.getDATAGRAM_SOCKET()){
             case 2:
                 this.RECEIVER_SOCKET = new DatagramSocket2(PORT);
                 break;
@@ -73,13 +73,12 @@ public class Receiver implements Runnable{
     }
 
     private void getPacket(){
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[8096];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
             // Waits to recieve a packet for 32ms
             RECEIVER_SOCKET.receive(packet);
-
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
 

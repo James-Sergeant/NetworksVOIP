@@ -2,6 +2,7 @@ package audioLayer;
 
 import CMPC3M06.AudioPlayer;
 import CMPC3M06.AudioRecorder;
+import voipLayer.Interpolator;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -50,10 +51,23 @@ public class AudioUtils {
 
     public static byte[] generateNoiseBlock(){
         byte[] block = new byte[AudioLayer.BLOCK_SIZE];
-        Random random = new Random();
-        for(int i = 0; i < block.length; i++){
-            block[i] = (byte) random.nextInt(256);
-        }
+        block = Interpolator.getInterpolatedBlock(AudioLayer.NOISE_BLOCK, AudioLayer.NOISE_BLOCK, 1, 0);
+        /*Random random = new Random();
+        for(int i = 0; i < block.length; i+=2){
+            short sample = (short) random.nextInt(65536);
+            block[i] = (byte) (sample);
+            block[i+1] = (byte) (sample >> 8);
+        }*/
         return block;
+    }
+
+    public static byte[] reduceAudioVolume(byte[] audio, float percentage){
+        byte[] newAudio = new byte[audio.length];
+        for(int i = 0; i < audio.length; i+=2){
+            short sample = (short) ((float) Interpolator.blockToShort(audio[i], audio[i+1]) * percentage);
+            newAudio[i] = (byte) (sample);
+            newAudio[i+1] = (byte) (sample >> 8);
+        }
+        return newAudio;
     }
 }

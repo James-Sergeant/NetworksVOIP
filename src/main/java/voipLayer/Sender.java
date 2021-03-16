@@ -25,7 +25,7 @@ public class Sender implements Runnable{
     private final Securitylayer securitylayer = new Securitylayer();
 
     // Interleaving
-    private final BlockInterleaver interleaver = new BlockInterleaver(Config.INTERLEAVER_SIZE);
+    private final BlockInterleaver interleaver = new BlockInterleaver(Config.preset.getINTERLEAVER_SIZE());
 
     /**
      * Creates a default sender using localhost and the port 55555
@@ -67,7 +67,7 @@ public class Sender implements Runnable{
     }
 
     private void setSocket() throws SocketException {
-        switch(Config.DATAGRAM_SOCKET){
+        switch(Config.preset.getDATAGRAM_SOCKET()){
             case 2:
                 SENDER_SOCKET = new DatagramSocket2();
                 break;
@@ -91,7 +91,7 @@ public class Sender implements Runnable{
         while(sending){
             DatagramPacket packet = createPacket();
             try {
-                if(Config.INTERLEAVER){
+                if(Config.preset.isINTERLEAVER()){
                     DatagramPacket packetToSend = interleaver.popPacket();
                     if(packetToSend != null) SENDER_SOCKET.send(packetToSend);
                     interleaver.addPacket(packet);

@@ -11,13 +11,28 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class Main {
+    /**
+     * TODO: LOWEST DELAY FOR SOCKET 1
+     * TODO: QUALITY SOCKET 2
+     * TODO: QUALITY SOCKET 3
+     * TODO: ENCRYPT AUDIO & PLAY
+     * TODO: DECRYPT AUDIO & PLAY
+     *
+     * TODO: SHOW BEST SYSTEM FOR EACH DATAGRAMSOCKET
+     * TODO: 10 MINUTE
+     *
+     * TODO: ASKED TO COUNT DIGITS "ONE TWO THREE FOUR"
+     * TODO: PLAY THROUGH
+     */
 
     // IP ADDRESSES
     private static final String SERGEANT_IP = "109.147.42.239";
     private static final String BURLING_IP = "86.154.116.23";
-
+    private static final int CALL_LENGTH = 60; // Time in seconds
 
     public static void main(String[] args) throws LineUnavailableException, IOException, InterruptedException {
+
+        Config.preset = Config.PRESET.SOCKET2;
 
         Analyzer.setup(false); // Setup static Analyser
 
@@ -34,7 +49,7 @@ public class Main {
         senderThread.start();
 
         // Wait until Threads finish (after CALL_LENGTH ms)
-        Thread.sleep(Config.CALL_LENGTH * 1000);
+        Thread.sleep(CALL_LENGTH * 1000);
 
         sender.toggleSending();
         receiver.toggleReceiving();

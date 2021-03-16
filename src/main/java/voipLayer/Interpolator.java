@@ -1,11 +1,13 @@
 package voipLayer;
 
+import utils.Logger;
+
 import java.nio.ByteBuffer;
 
 public class Interpolator {
 
     public static short blockToShort(byte byte1, byte byte2){
-        return (short) ((short) ((byte1) << 8) | (byte2));
+        return (short) ( ((byte2 & 0xFF) << 8) | (byte1 & 0xFF));
     }
 
     public static short linearInterpolateShort(short leftShort, short rightShort, double percentage){
@@ -29,27 +31,31 @@ public class Interpolator {
     }
 
     public static byte[] getInterpolatedBlock(byte[] block1, byte[] block2, int numberOfNulls, int nullIndex){
+
         short leftShort = blockToShort(block1[510], block1[511]);
         short rightShort = blockToShort(block2[0], block2[1]);
-        leftShort = getAverageSample(block1);
-        rightShort = getAverageSample(block2);
-        //System.out.println("LEFT AND RIGHT: "+leftShort +" "+rightShort);
-        //System.out.println("NumNulls = "+numberOfNulls +", NullIndex = "+nullIndex);
+
+        leftShort = (short) (getAverageSample(block1));
+        rightShort = (short) (getAverageSample(block2));
+
         byte[] interpolatedBlock = new byte[512];
+
         for(int i = 0; i < 256; i++){
             double percentage = (((double)i) + ((nullIndex-1)*256))/(256.0*numberOfNulls);
             short sample = cosineInterpolateShort(leftShort, rightShort, percentage);
-            interpolatedBlock[i*2] = (byte) (sample >> 8);
-            interpolatedBlock[(i*2)+1] = (byte) (sample);
+
+            interpolatedBlock[i*2] = (byte) (sample);
+            interpolatedBlock[(i*2)+1] = (byte) (sample >> 8);
+
         }
-        //System.out.println(blockToShort(interpolatedBlock[256],interpolatedBlock[257]));
+
         return interpolatedBlock;
     }
 
     public static void main(String[] args) {
 
         byte b1 = (byte)0;
-        byte b2 = (byte)0;
+        byte b2 = (byte)-1;
         byte[] s1 = ByteBuffer.allocate(2).putShort(blockToShort(b1, b2)).array();
         byte[] block1 = new byte[512];
         block1[510] = s1[0];

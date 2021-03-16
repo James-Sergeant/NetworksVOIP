@@ -2,25 +2,87 @@ package com;
 
 public class Config {
 
-    // DATAGRAM SOCKET
+    public static PRESET preset;
 
-    public static final int DATAGRAM_SOCKET = 3; // 1, 2 or 3 (1 default)
-    public static final int CALL_LENGTH = 50; // Seconds
+    public enum PACKET_LOSS_SOLUTION {REPETITION, BLANK_FILL_IN, INTERPOLATION, NOISE}
 
-    // AUDIO RECEIVING BUFFER
+    public enum PRESET{
+        SOCKET1(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false),
+        SOCKET2(2,1.0,true,32,1, Config.PACKET_LOSS_SOLUTION.NOISE, false, 5, false),
+        SOCKET3(3,1.0,true,0,1, Config.PACKET_LOSS_SOLUTION.REPETITION, false, 4, false),
+        SOCKET1XOR(1,1.0,true,1000,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true),
+        CUSTOM1(1,1.0,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, false, 3, false);
 
-    public static final double BUFFER_DELAY = 1.0; // Seconds
-    public static final boolean REORDER = true; // Re-Order packets when receiving
+        // DATAGRAM SOCKET
+        private final int DATAGRAM_SOCKET; // 1, 2 or 3
 
-    // AUDIO SOLUTIONS
+        // AUDIO RECEIVING BUFFER
 
-    public enum PLOSS_SOLUTION{REPETITION, BLANK_FILL_IN, INTERPOLATION}
+        private final double BUFFER_DELAY; // Seconds
+        private final boolean REORDER; // Re-Order packets when receiving
+        private final int TIMEOUT; // 1000ms for d1, 32ms for d2
 
-    public static final PLOSS_SOLUTION PACKET_LOSS_SOLUTION = PLOSS_SOLUTION.BLANK_FILL_IN;
-    public static final boolean INTERLEAVER = true; // Enable / Disable Block Interleaving
-    public static final int INTERLEAVER_SIZE = 4; // Size of block interleaver (3*3, 4*4, etc.)
+        // PACKET EFFICIENCY
 
-    // ENCRYPTION
+        private final int BLOCKS_PER_PACKET;
 
-    public static final boolean ENCRYPT = true;
+        // AUDIO SOLUTIONS
+
+        private final Config.PACKET_LOSS_SOLUTION PACKET_LOSS_SOLUTION;
+        private final boolean INTERLEAVER; // Enable / Disable Block Interleaving
+        private final int INTERLEAVER_SIZE; // Size of block interleaver (3*3, 4*4, etc.)
+
+        // SECURITY
+
+        private final boolean ENCRYPTION;
+
+        PRESET(int DATAGRAM_SOCKET, double BUFFER_DELAY, boolean REORDER, int TIMEOUT, int BLOCKS_PER_PACKET, Config.PACKET_LOSS_SOLUTION PACKET_LOSS_SOLUTION,
+               boolean INTERLEAVER, int INTERLEAVER_SIZE, boolean ENCRYPTION) {
+            this.DATAGRAM_SOCKET = DATAGRAM_SOCKET;
+            this.BUFFER_DELAY = BUFFER_DELAY;
+            this.REORDER = REORDER;
+            this.TIMEOUT = TIMEOUT;
+            this.BLOCKS_PER_PACKET = BLOCKS_PER_PACKET;
+            this.PACKET_LOSS_SOLUTION = PACKET_LOSS_SOLUTION;
+            this.INTERLEAVER = INTERLEAVER;
+            this.INTERLEAVER_SIZE = INTERLEAVER_SIZE;
+            this.ENCRYPTION = ENCRYPTION;
+        }
+
+        public int getDATAGRAM_SOCKET() {
+            return DATAGRAM_SOCKET;
+        }
+
+        public double getBUFFER_DELAY() {
+            return BUFFER_DELAY;
+        }
+
+        public boolean isREORDER() {
+            return REORDER;
+        }
+
+        public int getTIMEOUT() {
+            return TIMEOUT;
+        }
+
+        public int getBLOCKS_PER_PACKET() {
+            return BLOCKS_PER_PACKET;
+        }
+
+        public Config.PACKET_LOSS_SOLUTION getPACKET_LOSS_SOLUTION() {
+            return PACKET_LOSS_SOLUTION;
+        }
+
+        public boolean isINTERLEAVER() {
+            return INTERLEAVER;
+        }
+
+        public int getINTERLEAVER_SIZE() {
+            return INTERLEAVER_SIZE;
+        }
+
+        public boolean isENCRYPTION() {
+            return ENCRYPTION;
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package voipLayer;
 
-import audioLayer.AudioLayer;
 import com.Config;
 import com.Layer;
 import utils.AudioBuffer;
@@ -15,9 +14,8 @@ public class VoipLayer extends Layer {
     private static final long[] packetTimes = new long[256];
 
     // Solutions
-    private final AudioBuffer BUFFER = new AudioBuffer(Config.BUFFER_DELAY, 255);
+    private final AudioBuffer BUFFER = new AudioBuffer(Config.preset.getBUFFER_DELAY(), 255);
 
-    private final Interpolator INTERPOLATOR = new Interpolator();
     private byte[] lastPoppedBlock = null;
     private int nullCount = 0;
 
@@ -35,7 +33,7 @@ public class VoipLayer extends Layer {
         // Store current time of this packet
         int intPacketNumber = getPacketTimeIndex(packetNumber); // Get Unsigned int
         packetTimes[intPacketNumber] = System.nanoTime(); // Store current time
-        //System.out.println("SEND " + packetNumber);
+        Logger.log("SEND " + packetNumber);
         header[0] = packetNumber++; // Add packet number to header
         header[1] = receivedPacketNumber; // Add last received packet number to header
         return super.addHeader(payload);
@@ -70,15 +68,18 @@ public class VoipLayer extends Layer {
     public byte[] getAudioBlock(){
         byte[] audioBlock = BUFFER.popBlock();
 
-        if(audioBlock == null && Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.INTERPOLATION){
+        if(audioBlock == null && Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.INTERPOLATION){
+
             // Get number of null until next audio block. Get next audio block
             byte[] nextBlock = null;
             int numberOfNulls = 0;
             while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
                 nextBlock = BUFFER.getBlock(numberOfNulls++);
             }
+
             if(nextBlock != null) {
                 // Interpolate
+                System.out.println(numberOfNulls);
                 audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
             }
         }else{
