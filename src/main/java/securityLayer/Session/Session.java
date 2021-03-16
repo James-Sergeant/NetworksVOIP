@@ -17,6 +17,7 @@ public class Session {
     public static final byte SESSION_KEY = 2;
     public static final int REQUEST_PACKET_SIZE = 9;
 
+    private static boolean receiving = false;
     private static Sender sender;
     private static Receiver receiver;
 
@@ -42,6 +43,14 @@ public class Session {
         double encryptedSessionKey = RSA.encrypt(sessionKey,receiverPublicKey);
         sendSessionKey(encryptedSessionKey);
 
+    }
+
+    public static void receiveSession(){
+        receiving = true;
+        byte[] packet;
+        while (receiving){
+            packet = receiver.getPacket();
+        }
     }
 
     public static void sendSessionKey(double sessionKey){
