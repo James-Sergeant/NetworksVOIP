@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 public class Interpolator {
 
     public static short blockToShort(byte byte1, byte byte2){
-        return (short) ( ((byte1 & 0xFF) << 8) | (byte2 & 0xFF));
+        return (short) ( ((byte2 & 0xFF) << 8) | (byte1 & 0xFF));
     }
 
     public static short linearInterpolateShort(short leftShort, short rightShort, double percentage){
@@ -31,32 +31,24 @@ public class Interpolator {
     }
 
     public static byte[] getInterpolatedBlock(byte[] block1, byte[] block2, int numberOfNulls, int nullIndex){
+
         short leftShort = blockToShort(block1[510], block1[511]);
-        Logger.log("L = "+leftShort);
         short rightShort = blockToShort(block2[0], block2[1]);
-        Logger.log("R = "+rightShort);
+
         leftShort = (short) (getAverageSample(block1));
         rightShort = (short) (getAverageSample(block2));
 
         byte[] interpolatedBlock = new byte[512];
-        Logger.log("{");
+
         for(int i = 0; i < 256; i++){
             double percentage = (((double)i) + ((nullIndex-1)*256))/(256.0*numberOfNulls);
             short sample = cosineInterpolateShort(leftShort, rightShort, percentage);
 
-            Logger.log(sample+", ");
+            interpolatedBlock[i*2] = (byte) (sample);
+            interpolatedBlock[(i*2)+1] = (byte) (sample >> 8);
 
-            interpolatedBlock[i*2] = (byte) (sample >> 8);
-            interpolatedBlock[(i*2)+1] = (byte) (sample);
         }
-        Logger.log("}");
-        //System.out.println(blockToShort(interpolatedBlock[256],interpolatedBlock[257]));
-        // PRINT SAMPLES OF AUDIO DATA
-        Logger.log("{");
-        for(int i = 0; i < 256; i++){
-            Logger.log(Interpolator.blockToShort(interpolatedBlock[i],interpolatedBlock[i+1])+", ");
-        }
-        Logger.log("}");
+
         return interpolatedBlock;
     }
 

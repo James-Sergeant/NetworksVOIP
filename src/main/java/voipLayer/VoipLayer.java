@@ -33,7 +33,7 @@ public class VoipLayer extends Layer {
         // Store current time of this packet
         int intPacketNumber = getPacketTimeIndex(packetNumber); // Get Unsigned int
         packetTimes[intPacketNumber] = System.nanoTime(); // Store current time
-        //Logger.log("SEND " + packetNumber);
+        Logger.log("SEND " + packetNumber);
         header[0] = packetNumber++; // Add packet number to header
         header[1] = receivedPacketNumber; // Add last received packet number to header
         return super.addHeader(payload);
@@ -52,7 +52,7 @@ public class VoipLayer extends Layer {
         // Set other clients packet number
         prevReceivedPacketNumber = receivedPacketNumber;
         receivedPacketNumber = header[0];
-        System.out.println("RECEIVED: "+receivedPacketNumber);
+
         // ADD TO BUFFER
         BUFFER.insertBlock(getPacketTimeIndex(receivedPacketNumber), super.removeHeader(payload));
 
@@ -69,14 +69,17 @@ public class VoipLayer extends Layer {
         byte[] audioBlock = BUFFER.popBlock();
 
         if(audioBlock == null && Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.INTERPOLATION){
+
             // Get number of null until next audio block. Get next audio block
             byte[] nextBlock = null;
             int numberOfNulls = 0;
             while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
                 nextBlock = BUFFER.getBlock(numberOfNulls++);
             }
+
             if(nextBlock != null) {
                 // Interpolate
+                System.out.println(numberOfNulls);
                 audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
             }
         }else{

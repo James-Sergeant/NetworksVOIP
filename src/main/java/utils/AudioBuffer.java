@@ -107,7 +107,6 @@ public class AudioBuffer {
 
         Logger.log("LENGTH: "+currentLength);
         Logger.log("POP: "+ (startPacketNumber-1));
-        if(block == null) System.out.println("PACKET "+(startPacketNumber-1)+" = NULL");
         Logger.log(this);
 
         return block;
