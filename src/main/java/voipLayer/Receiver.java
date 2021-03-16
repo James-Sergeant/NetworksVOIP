@@ -18,7 +18,7 @@ public class Receiver implements Runnable{
     private DatagramSocket RECEIVER_SOCKET;
     private final int PORT;
     private boolean receiving = false;
-    private int TIMEOUT = Config.TIMEOUT;
+    private int TIMEOUT = Config.preset.getTIMEOUT();
 
     // Layers
     private final AudioLayer audioLayer = new AudioLayer();
@@ -45,7 +45,7 @@ public class Receiver implements Runnable{
 
     
     private void setSocket() throws SocketException {
-        switch(Config.DATAGRAM_SOCKET){
+        switch(Config.preset.getDATAGRAM_SOCKET()){
             case 2:
                 this.RECEIVER_SOCKET = new DatagramSocket2(PORT);
                 break;

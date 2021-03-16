@@ -4,9 +4,6 @@ import com.Config;
 import com.Layer;
 import voipLayer.Interpolator;
 
-import java.util.Arrays;
-import java.util.Random;
-
 public class AudioLayer extends Layer {
 
     public static final double BLOCK_LENGTH = 0.032;
@@ -16,7 +13,7 @@ public class AudioLayer extends Layer {
     private byte[] noiseBlock = AudioUtils.generateNoiseBlock();
     private final byte[] EMPTY_AUDIO_BLOCK = new byte[512];
     private int lossBurstLength = 0;
-    private final int blocksPerPacket = Config.BLOCKS_PER_PACKET;
+    private final int blocksPerPacket = Config.preset.getBLOCKS_PER_PACKET();
 
 
     public AudioLayer() {
@@ -42,9 +39,9 @@ public class AudioLayer extends Layer {
             // If packet's audio data was lost
             if (payload == null) {
                 lossBurstLength++;
-                if (Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.REPETITION) {
+                if (Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.REPETITION) {
                     audioBlock = prevAudio;//reduceAudioVolume(prevAudio, 1/(float)lossBurstLength);
-                } else if (Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.BLANK_FILL_IN) {
+                } else if (Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN) {
                     audioBlock = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
                 } else {
                     System.out.println("[ERROR] Audio Layer Payload=null");

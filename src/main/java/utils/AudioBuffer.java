@@ -30,23 +30,12 @@ public class AudioBuffer {
         refill = true;
     }
 
-    public AudioBuffer(int buffer_length, int maxPacketNumber){
-        MAX_PACKET_NUM = maxPacketNumber;
-        BUFFER_LENGTH = buffer_length;
-        BUFFER = new Vector<>();
-
-        startPacketNumber = 0;
-        endPacketNumber = BUFFER_LENGTH-1;
-        currentLength = 0;
-        refill = true;
-    }
-
     public void insertBlock(int packetNumber, byte[] block){
 
         if(isEmpty()) firstPacketSetup(packetNumber);
         Logger.log("Packet Num: "+packetNumber);
 
-        if(Config.REORDER) {
+        if(Config.preset.isREORDER()) {
             int bufferIndex = calculateBufferIndex(packetNumber);
             if (bufferIndex != -1) { // If packet number within range
                 Logger.log("BufferIndex = " + bufferIndex + " currentLength = " + currentLength);
@@ -117,7 +106,8 @@ public class AudioBuffer {
         if(isEmpty()) refill = true;
 
         Logger.log("LENGTH: "+currentLength);
-        Logger.log("POP: "+ startPacketNumber);
+        Logger.log("POP: "+ (startPacketNumber-1));
+        if(block == null) System.out.println("PACKET "+(startPacketNumber-1)+" = NULL");
         Logger.log(this);
 
         return block;
