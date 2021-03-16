@@ -29,6 +29,12 @@ public class Utils {
         return result;
     }
 
+    public static void printByteArray(byte[] x){
+        for(int i = 0; i<x.length; i++){
+            System.out.print(x[i]+", ");
+        }
+        System.out.println();
+    }
 
     public static void main(String[] args) throws InterruptedException {
         byte b = 0;
