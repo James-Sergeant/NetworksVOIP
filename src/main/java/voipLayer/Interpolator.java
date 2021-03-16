@@ -35,10 +35,9 @@ public class Interpolator {
         Logger.log("L = "+leftShort);
         short rightShort = blockToShort(block2[0], block2[1]);
         Logger.log("R = "+rightShort);
-        //leftShort = (short) (getAverageSample(block1));
-        //rightShort = (short) (getAverageSample(block2));
-        //System.out.println("LEFT AND RIGHT: "+leftShort +" "+rightShort);
-        //System.out.println("NumNulls = "+numberOfNulls +", NullIndex = "+nullIndex);
+        leftShort = (short) (getAverageSample(block1));
+        rightShort = (short) (getAverageSample(block2));
+
         byte[] interpolatedBlock = new byte[512];
         Logger.log("{");
         for(int i = 0; i < 256; i++){

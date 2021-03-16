@@ -26,33 +26,41 @@ public class AudioLayer extends Layer {
 
     @Override
     public byte[] addHeader(byte[] payload) {
-        header = AudioUtils.record();
-        return addHeader(header, payload);
+        payload = new byte[512 * blocksPerPacket];
+        for(int i = 0; i < blocksPerPacket; i++) {
+            header = AudioUtils.record();
+            System.arraycopy(header,0, payload, i*512, header.length);
+        }
+        return payload;
     }
 
     @Override
     public byte[] removeHeader(byte[] payload) {
-        // If packet's audio data was lost
-        if(payload == null){
-            lossBurstLength++;
-            if(Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.REPETITION){
-                payload = prevAudio;//reduceAudioVolume(prevAudio, 1/(float)lossBurstLength);
-            }else if(Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.BLANK_FILL_IN){
-                payload = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
-            }else{
-                System.out.println("[ERROR] Audio Layer Payload=null");
+        for(int i = 0; i < blocksPerPacket; i++) {
+            byte[] audioBlock = new byte[512];
+
+            // If packet's audio data was lost
+            if (payload == null) {
+                lossBurstLength++;
+                if (Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.REPETITION) {
+                    audioBlock = prevAudio;//reduceAudioVolume(prevAudio, 1/(float)lossBurstLength);
+                } else if (Config.PACKET_LOSS_SOLUTION == Config.PLOSS_SOLUTION.BLANK_FILL_IN) {
+                    audioBlock = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
+                } else {
+                    System.out.println("[ERROR] Audio Layer Payload=null");
+                }
+            } else {
+                System.arraycopy(payload,512 * i, audioBlock, 0, audioBlock.length);
+                lossBurstLength = 0;
+                prevAudio = audioBlock;
             }
-        }else{
-            lossBurstLength = 0;
-            prevAudio = payload;
+
+            // Get audio data from payload and add to the buffer
+            extractHeader(audioBlock);
+
+            // Send audio data to Player
+            AudioUtils.play(header);
         }
-
-        // Get audio data from payload and add to the buffer
-        extractHeader(payload);
-
-        // Send audio data to Player
-        AudioUtils.play(header);
-
         return null;
     }
 

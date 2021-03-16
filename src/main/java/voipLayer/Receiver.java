@@ -73,13 +73,12 @@ public class Receiver implements Runnable{
     }
 
     private void getPacket(){
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[8096];
         DatagramPacket packet = new DatagramPacket(buffer,0,buffer.length);
 
         try {
             // Waits to recieve a packet for 32ms
             RECEIVER_SOCKET.receive(packet);
-
             buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
 
