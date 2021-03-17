@@ -73,29 +73,32 @@ public class AudioUtils {
 
     public static byte[] removeLowerAudio(byte[] audio){
         byte[] newAudio = new byte[audio.length];
-        int amountAvg = 1;
+        int amountAvg = 5;
         byte[] prevSample = new byte[2];
         for(int i = 0; i < audio.length; i+= 2){
-            short total = 0;
+            int total = 0;
             short sample = Utils.blockToShort(audio[i], audio[i+1]);
-            System.out.println("I:"+i);
             for(int j = i-amountAvg+1; j < i + amountAvg+1; j+=2){
-                System.out.println("J:"+j);
                 if(j >= 0 && j < audio.length-1) {
-                    total += Utils.blockToShort(audio[j], audio[j + 1]);
+                    total += (int)Math.abs(Utils.blockToShort(audio[j], audio[j + 1]));
+                    //System.out.println("v:"+Math.abs(Utils.blockToShort(audio[j], audio[j + 1])));
                 }
             }
-            total = (short) ((float)total / (float)amountAvg);
-            System.out.println("T:"+total);
-            System.out.println("--------------------------------");
-            if(total > 200 || total < -200) {
+            //System.out.println("T:"+total);
+            total = (int) ((float)total / (float)amountAvg);
+            //System.out.println("T:"+total);
+            //System.out.println("--------------------------------");
+            if(total > 200) {
                 newAudio[i] = audio[i];
                 newAudio[i+1] = audio[i+1];
                 prevSample[0] = audio[i];
                 prevSample[1] = audio[i+1];
+                //System.out.println("P:"+total);
             }else{
                 newAudio[i] = 0;
                 newAudio[i+1] = 0;
+                //System.out.println("F:"+total);
+
             }
         }
 

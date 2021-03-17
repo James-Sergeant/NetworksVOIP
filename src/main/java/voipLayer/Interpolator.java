@@ -47,6 +47,24 @@ public class Interpolator {
         return interpolatedBlock;
     }
 
+    public static byte[] getAveragedBlock(byte[] block1, byte[] block2, int numberOfNulls, int nullIndex){
+        byte[] newBlock = new byte[512];
+
+        for(int i = 0; i < 512; i+=2){
+            short sample1 = Utils.blockToShort(block1[510-i], block1[511-i]);
+            short sample2 = Utils.blockToShort(block2[510-i], block2[511-i]);
+            
+            double percentage = (((double)i) + ((nullIndex-1)*256))/(256.0*numberOfNulls);
+            short sample = cosineInterpolateShort(leftShort, rightShort, percentage);
+
+            interpolatedBlock[i*2] = (byte) (sample);
+            interpolatedBlock[(i*2)+1] = (byte) (sample >> 8);
+
+        }
+    }
+
+
+
     public static void main(String[] args) {
 
         byte b1 = (byte)0;
