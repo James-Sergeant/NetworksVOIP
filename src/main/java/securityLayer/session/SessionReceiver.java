@@ -39,5 +39,13 @@ public class SessionReceiver implements Runnable {
         }
     }
 
+    public DatagramPacket getNewPacket(){
+        newPacket =false;
+        return PACKET;
+    }
+
+    public boolean isNewPacket(){
+        return newPacket;
+    }
 
 }

@@ -1,6 +1,13 @@
 package securityLayer.session;
 
 import securityLayer.encryption.RSA;
+import securityLayer.encryption.XOR;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.DatagramPacket;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
 
 public class Session {
     //Public keys:
@@ -8,14 +15,144 @@ public class Session {
     public static final byte PUBLIC_KEY_RESPONSE = 1;
     //Session keys:
     public static final byte SESSION_KEY = 2;
+    //Packet Size:
+    public static final int PACKET_SIZE = 9;
 
-    public static boolean initiator = false;
+    public boolean sessionFinished = false;
+
 
     private RSA.KeyPair receiverPublicKey;
+    private RSA.KeyPair localPublicKey;
     private final RSA rsa;
 
-    Session(){
+    public int sessionKey;
+
+    private final SessionReceiver sessionReceiver;
+
+    private final Thread receiverThread;
+
+    private String IP;
+
+    Session() throws SocketException, InterruptedException {
         rsa = new RSA();
+        localPublicKey = rsa.publicKey;
+        sessionReceiver = new SessionReceiver();
+        //Starts a new receiver thread.
+        receiverThread = new Thread(sessionReceiver);
+        sessionReceiver();
     }
+    Session(String IP) throws IOException {
+        rsa = new RSA();
+        localPublicKey = rsa.publicKey;
+        sessionReceiver = new SessionReceiver();
+        //Starts a new receiver thread.
+        receiverThread = new Thread(sessionReceiver);
+        this.IP = IP;
+        sessionInitiator();
+    }
+    //Sender Side:
+    private void sessionInitiator() throws IOException {
+        //Send private key request:
+        sendPublicKeyRequest();
+        //Receive the key back:
+        boolean keyReceived = false;
+        while (!keyReceived){
+            if(sessionReceiver.isNewPacket()){
+                setReceiverPublicKey(sessionReceiver.getNewPacket());
+                keyReceived = true;
+            }
+        }
+        //Send session key:
+        sendSessionKey();
+    }
+
+    private void sendPublicKeyRequest() throws IOException {
+        // Create the packet with the request header:
+        byte[] payload = new byte[PACKET_SIZE];
+        payload[0] = PUBLIC_KEY_REQUEST;
+        // Send of the the request.
+        new SessionSender(IP,payload);
+    }
+
+    private void setReceiverPublicKey(DatagramPacket packet){
+        byte[] data = packet.getData();
+        byte[] n = new byte[Integer.BYTES];
+        byte[] e =new byte[Integer.BYTES];
+        //Sets byte array:
+        System.arraycopy(data,1,n,0,n.length);
+        System.arraycopy(data,5,e,0,e.length);
+        //Makes keyPair:
+        int intN = ByteBuffer.wrap(n).getInt();
+        int intE = ByteBuffer.wrap(e).getInt();
+        receiverPublicKey = new RSA.KeyPair(intE,intN);
+    }
+
+    private void sendSessionKey() throws IOException {
+        int key = XOR.generateSessionKey();
+        double encryptedKey = RSA.encrypt(key,receiverPublicKey);
+        byte[] keyBytes = ByteBuffer.allocate(Double.BYTES).putDouble(encryptedKey).array();
+        byte[] payload = new byte[PACKET_SIZE];
+        payload[0] = SESSION_KEY;
+        System.arraycopy(keyBytes,0,payload,1,keyBytes.length);
+        new SessionSender(IP,payload);
+    }
+
+    //Receiver side:
+
+    private void sessionReceiver() throws InterruptedException {
+        while (!sessionFinished){
+            if(sessionReceiver.isNewPacket()){
+                //Handel incoming packet:
+                DatagramPacket packet = sessionReceiver.getNewPacket();
+                byte[] payload = packet.getData();
+                IP = packet.getAddress().toString();
+
+                //Decide what type of request it is:
+                byte head = payload[0];
+                if(head == PUBLIC_KEY_REQUEST){
+                    handlePublicKeyRequest();
+                }else if(head == SESSION_KEY){
+                    handleSessionKey(payload);
+                }else {
+                    System.out.println("Error with session creation!");
+                }
+            }else {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        sessionReceiver.receiving =false;
+        receiverThread.join();
+    }
+
+    private void handlePublicKeyRequest(){
+        byte[] n = ByteBuffer.allocate(4).putInt(localPublicKey.getN()).array();
+        byte[] e = ByteBuffer.allocate(4).putInt(localPublicKey.getExponent()).array();
+        byte[] payload = new byte[PACKET_SIZE];
+        //Set the head to identify a response.
+        payload[0] = PUBLIC_KEY_RESPONSE;
+        //Adds the n and e to it:
+        System.arraycopy(n,0,payload,1,n.length);
+        System.arraycopy(e,0,payload,5,e.length);
+        //Sends off the public key:
+        try {
+           new SessionSender(IP,payload);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+    private void handleSessionKey(byte[] payload){
+        byte[] data = new byte[PACKET_SIZE -1];
+        System.arraycopy(payload,1,data,0,data.length);
+        double encryptedSessionKey = ByteBuffer.wrap(data).getDouble();
+        int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
+        this.sessionKey = sessionKey;
+        System.out.println(sessionKey);
+        sessionFinished =true;
+    }
+
 
 }
