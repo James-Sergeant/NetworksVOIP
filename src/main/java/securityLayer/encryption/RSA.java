@@ -29,7 +29,7 @@ public class RSA {
      */
     public RSA(){
         // Finds two independent probable primes p and q
-        findBigPrime(8);
+        findBigPrime(10);
         //n is the product of the two primes.
         n = p * q;
         //The Euler Phi Function
@@ -74,7 +74,7 @@ public class RSA {
             p = BigInteger.probablePrime(size, new Random()).intValue();
 
             // 2nd prime number q
-            q = BigInteger.probablePrime(size, new Random()).intValue();
+            q = BigInteger.probablePrime(2*size/3, new Random()).intValue();
         }
     }
 
@@ -150,6 +150,14 @@ public class RSA {
         public int getN() {
             return n;
         }
+
+        @Override
+        public String toString() {
+            return "KeyPair{" +
+                    "Exponent=" + Exponent +
+                    ", n=" + n +
+                    '}';
+        }
     }
 
     /**
@@ -157,9 +165,12 @@ public class RSA {
      * @param args
      */
     public static void main(String[] args) {
-        int msg = 500;
+        int msg = BigInteger.probablePrime(8, new Random()).intValue();;
+        System.out.println(msg);
         RSA rsa = new RSA();
-
+        System.out.println("P: "+rsa.p);
+        System.out.println("Q: "+rsa.q);
+        System.out.println(Math.abs(rsa.p-rsa.q));
         double encryptedMsg = rsa.encrypt(msg,rsa.publicKey);
         System.out.println(encryptedMsg);
         System.out.println(rsa.decrypt(encryptedMsg));

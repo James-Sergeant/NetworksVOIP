@@ -2,12 +2,15 @@ package securityLayer.session;
 
 import securityLayer.encryption.RSA;
 import securityLayer.encryption.XOR;
+import utils.Utils;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+
+import static com.Main.BURLING_IP;
 
 public class Session {
     //Public keys:
@@ -39,6 +42,7 @@ public class Session {
         sessionReceiver = new SessionReceiver();
         //Starts a new receiver thread.
         receiverThread = new Thread(sessionReceiver);
+        receiverThread.start();
         sessionReceiver();
     }
     Session(String IP) throws IOException {
@@ -47,6 +51,7 @@ public class Session {
         sessionReceiver = new SessionReceiver();
         //Starts a new receiver thread.
         receiverThread = new Thread(sessionReceiver);
+        receiverThread.start();
         this.IP = IP;
         sessionInitiator();
     }
@@ -58,8 +63,14 @@ public class Session {
         boolean keyReceived = false;
         while (!keyReceived){
             if(sessionReceiver.isNewPacket()){
+                System.out.println("Key Received!");
                 setReceiverPublicKey(sessionReceiver.getNewPacket());
                 keyReceived = true;
+            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         //Send session key:
@@ -89,11 +100,15 @@ public class Session {
 
     private void sendSessionKey() throws IOException {
         int key = XOR.generateSessionKey();
+        System.out.println("Ket sent: "+key);
+        System.out.println("Public Key: "+receiverPublicKey);
         double encryptedKey = RSA.encrypt(key,receiverPublicKey);
         byte[] keyBytes = ByteBuffer.allocate(Double.BYTES).putDouble(encryptedKey).array();
         byte[] payload = new byte[PACKET_SIZE];
         payload[0] = SESSION_KEY;
         System.arraycopy(keyBytes,0,payload,1,keyBytes.length);
+        System.out.println("S Key payload: ");
+        Utils.printByteArray(payload);
         new SessionSender(IP,payload);
     }
 
@@ -106,7 +121,6 @@ public class Session {
                 DatagramPacket packet = sessionReceiver.getNewPacket();
                 byte[] payload = packet.getData();
                 IP = packet.getAddress().toString();
-
                 //Decide what type of request it is:
                 byte head = payload[0];
                 if(head == PUBLIC_KEY_REQUEST){
@@ -154,5 +168,8 @@ public class Session {
         sessionFinished =true;
     }
 
+    public static void main(String[] args) throws IOException {
+        new Session(BURLING_IP);
+    }
 
 }
