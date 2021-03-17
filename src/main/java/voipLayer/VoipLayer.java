@@ -79,7 +79,6 @@ public class VoipLayer extends Layer {
 
             if(nextBlock != null) {
                 // Interpolate
-                System.out.println(numberOfNulls);
                 audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
             }
         }else{

@@ -30,8 +30,8 @@ public class Interpolator {
         short leftShort = Utils.blockToShort(block1[510], block1[511]);
         short rightShort = Utils.blockToShort(block2[0], block2[1]);
 
-        leftShort = (short) (getAverageSample(block1));
-        rightShort = (short) (getAverageSample(block2));
+        //leftShort = (short) (getAverageSample(block1));
+        //rightShort = (short) (getAverageSample(block2));
 
         byte[] interpolatedBlock = new byte[512];
 

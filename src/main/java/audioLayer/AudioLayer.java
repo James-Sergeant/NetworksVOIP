@@ -46,7 +46,7 @@ public class AudioLayer extends Layer {
                 } else if (Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN) {
                     audioBlock = EMPTY_AUDIO_BLOCK; // FILL-IN Empty Audio
                 } else if(Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.NOISE){
-                    audioBlock = NOISE_BLOCK;
+                    audioBlock = noiseBlock;
                 }else {
                     System.out.println("[ERROR] Audio Layer Payload=null");
                 }
@@ -60,7 +60,7 @@ public class AudioLayer extends Layer {
             extractHeader(audioBlock);
 
             // Send audio data to Player
-            AudioUtils.play(AudioUtils.removeLowerAudio(header));
+            AudioUtils.play(header);
         }
         return null;
     }
