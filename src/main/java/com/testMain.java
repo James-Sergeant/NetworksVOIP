@@ -31,7 +31,7 @@ public class testMain {
                 if(IP.equals("b")){
                     IP = BURLING_IP;
                 }
-                if (IP.equals("s"){
+                if (IP.equals("s")){
                     IP=SERGEANT_IP;
                 }
             }else if(arg.equals("-s")){
@@ -47,7 +47,7 @@ public class testMain {
         }
 
         if(IP.toLowerCase(Locale.ROOT).equals("localhost")){
-            SecurityLayer.sessionKey = XOR.generateSessionKey();
+            SecurityLayer.xor = new XOR(XOR.generateSessionKey());
             runVOIP(IP);
         }else if(IP.equals("")){
             new Session();
@@ -58,9 +58,9 @@ public class testMain {
         }
     }
 
-    private static void runVOIP(String IP) throws InterruptedException, SocketException, UnknownHostException, LineUnavailableException {
+    private static void runVOIP(String senderIP) throws InterruptedException, SocketException, UnknownHostException, LineUnavailableException {
         // Create Receiver & Sender
-        Sender sender = new Sender();
+        Sender sender = new Sender(senderIP);
         Receiver receiver = new Receiver();
 
         // Create Threads

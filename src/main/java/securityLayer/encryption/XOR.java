@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 public class XOR {
-    private int sessionKey;
+    private final int sessionKey;
     public XOR(int sessionKey){
         this.sessionKey = sessionKey;
     }

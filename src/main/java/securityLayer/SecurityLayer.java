@@ -6,11 +6,9 @@ import securityLayer.encryption.XOR;
 import utils.Utils;
 
 public class SecurityLayer extends Layer {
-    public static int sessionKey;
-    private final XOR xor;
+    public static XOR xor;
 
     public SecurityLayer(){
-        xor = new XOR(sessionKey);
     }
 
     @Override

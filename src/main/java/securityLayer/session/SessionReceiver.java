@@ -20,6 +20,7 @@ public class SessionReceiver implements Runnable {
     public SessionReceiver() throws SocketException {
         receiving = false;
         RECEIVER_SOCKET = new DatagramSocket(PORT);
+        RECEIVER_SOCKET.setSoTimeout(1000);
         newPacket = false;
         BUFFER = new byte[PACKET_SIZE];
         PACKET = new DatagramPacket(BUFFER,0,BUFFER.length);
@@ -35,9 +36,10 @@ public class SessionReceiver implements Runnable {
                 RECEIVER_SOCKET.receive(PACKET);
                 newPacket = true;
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
+        RECEIVER_SOCKET.close();
     }
 
     public DatagramPacket getNewPacket(){

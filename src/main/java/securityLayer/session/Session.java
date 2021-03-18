@@ -48,6 +48,7 @@ public class Session {
         receiverThread = new Thread(sessionReceiver);
         receiverThread.start();
         sessionReceiver();
+        SecurityLayer.xor = new XOR(sessionKey);
     }
     public Session(String IP) throws IOException, InterruptedException {
         rsa = new RSA();
@@ -58,6 +59,7 @@ public class Session {
         receiverThread.start();
         this.IP = IP;
         sessionInitiator();
+        SecurityLayer.xor = new XOR(sessionKey);
     }
     //Sender Side:
     private void sessionInitiator() throws IOException {
@@ -79,7 +81,6 @@ public class Session {
         }
         //Send session key:
         sendSessionKey();
-        SecurityLayer.sessionKey = sessionKey;
         sessionReceiver.receiving =false;
         try {
             receiverThread.join();
@@ -111,6 +112,7 @@ public class Session {
 
     private void sendSessionKey() throws IOException {
         int key = XOR.generateSessionKey();
+        sessionKey = key;
         System.out.println("Ket sent: "+key);
         System.out.println("Public Key: "+receiverPublicKey);
         String encryptedKey = RSA.encrypt(key,receiverPublicKey);
@@ -150,7 +152,6 @@ public class Session {
                 }
             }
         }
-        SecurityLayer.sessionKey = sessionKey;
         sessionReceiver.receiving =false;
         receiverThread.join();
     }

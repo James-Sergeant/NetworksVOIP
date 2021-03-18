@@ -14,5 +14,6 @@ public class SessionSender {
         DatagramPacket dp = new DatagramPacket(data,data.length,this.IP,PORT);
         SOCKET.send(dp);
         System.out.println("Session Packet Sent");
+        SOCKET.close();
     }
 }
