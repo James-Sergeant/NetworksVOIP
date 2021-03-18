@@ -2,15 +2,13 @@ package voipLayer;
 
 import audioLayer.AudioLayer;
 import com.Config;
-import com.Main;
-import securityLayer.Securitylayer;
+import securityLayer.SecurityLayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
-import java.util.Arrays;
 
 public class Sender implements Runnable{
 
@@ -22,7 +20,7 @@ public class Sender implements Runnable{
     // Layers
     private final AudioLayer audioLayer = new AudioLayer();
     private final VoipLayer voipLayer = new VoipLayer();
-    private final Securitylayer securitylayer = new Securitylayer();
+    private final SecurityLayer securitylayer = new SecurityLayer();
 
     // Interleaving
     private final BlockInterleaver interleaver = new BlockInterleaver(Config.preset.getINTERLEAVER_SIZE());

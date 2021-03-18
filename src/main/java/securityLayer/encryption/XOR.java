@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class XOR {
     private int sessionKey;
-    XOR(int sessionKey){
+    public XOR(int sessionKey){
         this.sessionKey = sessionKey;
     }
 

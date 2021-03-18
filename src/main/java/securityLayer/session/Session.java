@@ -1,5 +1,6 @@
 package securityLayer.session;
 
+import securityLayer.SecurityLayer;
 import securityLayer.encryption.RSA;
 import securityLayer.encryption.XOR;
 import utils.Utils;
@@ -77,6 +78,13 @@ public class Session {
         }
         //Send session key:
         sendSessionKey();
+        SecurityLayer.sessionKey = sessionKey;
+        sessionReceiver.receiving =false;
+        try {
+            receiverThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendPublicKeyRequest() throws IOException {
@@ -141,6 +149,7 @@ public class Session {
                 }
             }
         }
+        SecurityLayer.sessionKey = sessionKey;
         sessionReceiver.receiving =false;
         receiverThread.join();
     }
