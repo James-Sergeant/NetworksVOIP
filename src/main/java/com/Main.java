@@ -26,8 +26,8 @@ public class Main {
      */
 
     // IP ADDRESSES
-    private static final String SERGEANT_IP = "109.147.42.239";
-    private static final String BURLING_IP = "86.154.116.23";
+    public static final String SERGEANT_IP = "109.147.42.239";
+    public static final String BURLING_IP = "86.154.116.23";
     private static final int CALL_LENGTH = 60; // Time in seconds
 
     public static void main(String[] args) throws LineUnavailableException, IOException, InterruptedException {
