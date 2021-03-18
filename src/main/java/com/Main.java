@@ -70,6 +70,7 @@ public class Main {
     }
 
     private static void runVOIP(String senderIP) throws InterruptedException, SocketException, UnknownHostException, LineUnavailableException {
+
         System.out.println(ANSI_GREEN+"Connection Established, running VOIP system!"+ANSI_RESET);
         // Create Receiver & Sender
         Sender sender = new Sender(senderIP);

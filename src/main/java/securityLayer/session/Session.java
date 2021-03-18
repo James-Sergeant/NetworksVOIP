@@ -1,5 +1,6 @@
 package securityLayer.session;
 
+import com.Config;
 import com.Main;
 import securityLayer.SecurityLayer;
 import securityLayer.encryption.RSA;
@@ -119,6 +120,9 @@ public class Session {
         System.out.println(ANSI_YELLOW+"[>] "+ANSI_RESET+"Sending session key...");
         int key = XOR.generateSessionKey();
         sessionKey = key;
+        if(Config.preset.equals(Config.PRESET.XOR1)){
+            this.sessionKey = 2063682301;
+        }
         String encryptedKey = RSA.encrypt(key,receiverPublicKey);
         byte[] keyBytes = encryptedKey.getBytes(StandardCharsets.US_ASCII);
         byte[] payload = new byte[keyBytes.length+1];
@@ -182,6 +186,9 @@ public class Session {
         String encryptedSessionKey = new String(data);
         int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
         this.sessionKey = sessionKey;
+        if(Config.preset.equals(Config.PRESET.XOR1)){
+            this.sessionKey = 2063682301;
+        }
         Main.IP = this.IP.replace("/","");
         sessionFinished =true;
     }
