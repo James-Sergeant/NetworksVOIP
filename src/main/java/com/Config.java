@@ -10,7 +10,7 @@ public class Config {
         SOCKET1(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false),
         SOCKET2(2,1.5,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 5, false),
         SOCKET3(3,2.0,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 4, false),
-        XOR(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false),
+        XOR(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true),
         CUSTOM1(2,1.0,true,32,1, Config.PACKET_LOSS_SOLUTION.REPETITION, false, 3, false);
 
         // DATAGRAM SOCKET
