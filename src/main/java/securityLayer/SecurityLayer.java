@@ -16,9 +16,6 @@ public class SecurityLayer extends Layer {
     @Override
     public byte[] addHeader(byte[] payload) {
         if(Config.preset.isENCRYPTION()) {
-            System.out.println("Before encrypt");
-            Utils.printByteArray(payload);
-            System.out.println();
             return xor.encryptDecryptAudio(payload);
         }
         return payload;
@@ -26,10 +23,7 @@ public class SecurityLayer extends Layer {
 
     @Override
     public byte[] removeHeader(byte[] payload) {
-        if(Config.preset.isENCRYPTION()) {
-            System.out.println("After decrypt");
-            Utils.printByteArray(payload);
-            System.out.println();
+        if(Config.preset.isDECRYPTION()) {
             return xor.encryptDecryptAudio(payload);
         }
         return payload;

@@ -7,11 +7,13 @@ public class Config {
     public enum PACKET_LOSS_SOLUTION {REPETITION, BLANK_FILL_IN, INTERPOLATION, NOISE}
 
     public enum PRESET{
-        SOCKET1(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false),
-        SOCKET2(2,1.5,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 5, false),
-        SOCKET3(3,2.0,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 4, false),
-        XOR(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true),
-        CUSTOM1(2,1.0,true,32,1, Config.PACKET_LOSS_SOLUTION.REPETITION, false, 3, false);
+        SOCKET1(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false,false),
+        SOCKET2(2,1.5,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 5, false,false),
+        SOCKET3(3,2.0,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 4, false,false),
+        XOR1(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true,false),
+        XOR2(1,0.0,false,0,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true,true),
+
+        CUSTOM1(2,1.0,true,32,1, Config.PACKET_LOSS_SOLUTION.REPETITION, false, 3, false,false);
 
         // DATAGRAM SOCKET
         private final int DATAGRAM_SOCKET; // 1, 2 or 3
@@ -35,9 +37,11 @@ public class Config {
         // SECURITY
 
         private final boolean ENCRYPTION;
+        private final boolean DECRYPTION;
+
 
         PRESET(int DATAGRAM_SOCKET, double BUFFER_DELAY, boolean REORDER, int TIMEOUT, int BLOCKS_PER_PACKET, Config.PACKET_LOSS_SOLUTION PACKET_LOSS_SOLUTION,
-               boolean INTERLEAVER, int INTERLEAVER_SIZE, boolean ENCRYPTION) {
+               boolean INTERLEAVER, int INTERLEAVER_SIZE, boolean ENCRYPTION, boolean DECRYPTION) {
             this.DATAGRAM_SOCKET = DATAGRAM_SOCKET;
             this.BUFFER_DELAY = BUFFER_DELAY;
             this.REORDER = REORDER;
@@ -47,6 +51,7 @@ public class Config {
             this.INTERLEAVER = INTERLEAVER;
             this.INTERLEAVER_SIZE = INTERLEAVER_SIZE;
             this.ENCRYPTION = ENCRYPTION;
+            this.DECRYPTION = DECRYPTION;
         }
 
         public int getDATAGRAM_SOCKET() {
@@ -83,6 +88,10 @@ public class Config {
 
         public boolean isENCRYPTION() {
             return ENCRYPTION;
+        }
+
+        public boolean isDECRYPTION() {
+            return DECRYPTION;
         }
     }
 }
