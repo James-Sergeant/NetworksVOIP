@@ -3,6 +3,7 @@ package securityLayer;
 import com.Config;
 import com.Layer;
 import securityLayer.encryption.XOR;
+import utils.Utils;
 
 public class SecurityLayer extends Layer {
     public static int sessionKey;
@@ -15,6 +16,9 @@ public class SecurityLayer extends Layer {
     @Override
     public byte[] addHeader(byte[] payload) {
         if(Config.preset.isENCRYPTION()) {
+            System.out.println("Before encrypt");
+            Utils.printByteArray(payload);
+            System.out.println();
             return xor.encryptDecryptAudio(payload);
         }
         return payload;
@@ -22,6 +26,12 @@ public class SecurityLayer extends Layer {
 
     @Override
     public byte[] removeHeader(byte[] payload) {
-        return addHeader(payload);
+        if(Config.preset.isENCRYPTION()) {
+            System.out.println("After decrypt");
+            Utils.printByteArray(payload);
+            System.out.println();
+            return xor.encryptDecryptAudio(payload);
+        }
+        return payload;
     }
 }

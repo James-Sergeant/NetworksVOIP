@@ -77,7 +77,6 @@ public class Receiver implements Runnable{
         try {
             // Waits to recieve a packet for 32ms
             RECEIVER_SOCKET.receive(packet);
-            buffer = securitylayer.removeHeader(buffer);
             buffer = voipLayer.removeHeader(buffer);
 
         } catch (IOException ignored) {
@@ -85,7 +84,7 @@ public class Receiver implements Runnable{
 
 
         if(voipLayer.allowPlaying()) {
-            audioLayer.removeHeader(voipLayer.getAudioBlock());
+            audioLayer.removeHeader(securitylayer.removeHeader(voipLayer.getAudioBlock()));
         }
     }
 }
