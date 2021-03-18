@@ -28,12 +28,12 @@ public class Main {
     public static final String BURLING_IP = "86.154.116.23";
 
     public static void main(String[] args) throws InterruptedException, IOException, LineUnavailableException {
-        /*System.setErr(new PrintStream(new OutputStream() {
+        System.setErr(new PrintStream(new OutputStream() {
             @Override
             public void write(int b) throws IOException {
             }
         }));
-         */
+
         //Takes in the user input for the system.
         int i = 0;
         for(String arg: args){
