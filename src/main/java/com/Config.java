@@ -9,7 +9,7 @@ public class Config {
     public enum PRESET{
         SOCKET1(1,0.0,false,32,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false,false),
         SOCKET2(2,1.5,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 5, false,false),
-        SOCKET3(3,2.0,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 4, false,false),
+        SOCKET3(3,1.5,true,32,1, Config.PACKET_LOSS_SOLUTION.INTERPOLATION, true, 4, false,false),
         XOR1(1,0.0,false,32,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true,false),
         XOR2(1,0.0,false,32,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true,true),
 
