@@ -1,2 +1,2 @@
-#!bin/bash
+#!/bin/bash
 java -jar NetworksVOIP.jar -ip b -s socket1
