@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static com.Main.BURLING_IP;
+import static com.Main.SERGEANT_IP;
 
 public class Session {
     //Public keys:
@@ -46,7 +47,7 @@ public class Session {
         receiverThread.start();
         sessionReceiver();
     }
-    Session(String IP) throws IOException {
+    Session(String IP) throws IOException, InterruptedException {
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -105,10 +106,10 @@ public class Session {
         System.out.println("Public Key: "+receiverPublicKey);
         String encryptedKey = RSA.encrypt(key,receiverPublicKey);
         byte[] keyBytes = encryptedKey.getBytes(StandardCharsets.US_ASCII);
-        byte[] payload = new byte[PACKET_SIZE];
+        byte[] payload = new byte[keyBytes.length+1];
         payload[0] = SESSION_KEY;
         System.arraycopy(keyBytes,0,payload,1,keyBytes.length);
-        System.out.println("S Key payload: ");
+        System.out.println("Session Key payload: ");
         Utils.printByteArray(payload);
         new SessionSender(IP,payload);
     }
@@ -163,14 +164,14 @@ public class Session {
         byte[] data = new byte[payload.length-1];
         System.arraycopy(payload,1,data,0,data.length);
         String encryptedSessionKey = new String(data);
-        System.out.println("RECIEVED ENCRYPED: "+encryptedSessionKey);
+        System.out.println("RECEIVED ENCRYPTED: "+encryptedSessionKey);
         int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
         this.sessionKey = sessionKey;
         System.out.println(sessionKey);
         sessionFinished =true;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         new Session(BURLING_IP);
     }
 

@@ -69,17 +69,17 @@ public class VoipLayer extends Layer {
         byte[] audioBlock = BUFFER.popBlock();
 
         if(audioBlock == null && Config.preset.getPACKET_LOSS_SOLUTION() == Config.PACKET_LOSS_SOLUTION.INTERPOLATION){
-
             // Get number of null until next audio block. Get next audio block
             byte[] nextBlock = null;
             int numberOfNulls = 0;
             while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
                 nextBlock = BUFFER.getBlock(numberOfNulls++);
             }
-
+            if(nullCount == 0) System.out.println("Packets Lost = "+numberOfNulls);
             if(nextBlock != null) {
                 // Interpolate
-                audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
+                audioBlock = Interpolator.getAveragedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
+                //audioBlock = Interpolator.getInterpolatedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);
             }
         }else{
             nullCount = 0;

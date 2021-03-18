@@ -19,7 +19,7 @@ public class Interpolator {
 
     public static short getAverageSample(byte[] block){
         short total = 0;
-        for(int i = 0; i < 256; i++){
+        for(int i = 0; i < 512; i+=2){
             total += Utils.blockToShort(block[i], block[i+1]);
         }
         return (short) (total / 256);
@@ -49,18 +49,23 @@ public class Interpolator {
 
     public static byte[] getAveragedBlock(byte[] block1, byte[] block2, int numberOfNulls, int nullIndex){
         byte[] newBlock = new byte[512];
+        byte[] interp = getInterpolatedBlock(block1, block2, numberOfNulls, nullIndex);
 
         for(int i = 0; i < 512; i+=2){
-            short sample1 = Utils.blockToShort(block1[510-i], block1[511-i]);
-            short sample2 = Utils.blockToShort(block2[510-i], block2[511-i]);
-            
-            double percentage = (((double)i) + ((nullIndex-1)*256))/(256.0*numberOfNulls);
-            short sample = cosineInterpolateShort(leftShort, rightShort, percentage);
+            short interpSample = Utils.blockToShort(interp[i], interp[i+1]);
+            short sample1 = Utils.blockToShort(block1[i], block1[i+1]);
+            short sample2 = Utils.blockToShort(block2[i], block2[i+1]);
 
-            interpolatedBlock[i*2] = (byte) (sample);
-            interpolatedBlock[(i*2)+1] = (byte) (sample >> 8);
+            double percentage = (((double)i) + ((nullIndex-1)*256))/(256.0*numberOfNulls);
+            short sample = (short) ((short) ((sample1 * (1-percentage)) + (sample2 * percentage))/2);
+            sample = (short) ((sample + interpSample) / 2);
+
+            newBlock[i] = (byte) (sample);
+            newBlock[i+1] = (byte) (sample >> 8);
 
         }
+
+        return newBlock;
     }
 
 
