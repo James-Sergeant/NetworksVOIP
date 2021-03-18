@@ -75,7 +75,7 @@ public class VoipLayer extends Layer {
             while(nextBlock == null && numberOfNulls < BUFFER.getLength()){
                 nextBlock = BUFFER.getBlock(numberOfNulls++);
             }
-            if(nullCount == 0) System.out.println("Packets Lost = "+numberOfNulls);
+            //if(nullCount == 0) System.out.println("Packets Lost = "+numberOfNulls);
             if(nextBlock != null) {
                 // Interpolate
                 audioBlock = Interpolator.getAveragedBlock(lastPoppedBlock, nextBlock, numberOfNulls, ++nullCount);

@@ -1,20 +1,15 @@
 package securityLayer.session;
 
-import com.testMain;
+import com.Main;
 import securityLayer.SecurityLayer;
 import securityLayer.encryption.RSA;
 import securityLayer.encryption.XOR;
-import utils.Utils;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-
-import static com.Main.BURLING_IP;
-import static com.Main.SERGEANT_IP;
 
 public class Session {
     //Colour codes:
@@ -187,7 +182,7 @@ public class Session {
         String encryptedSessionKey = new String(data);
         int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
         this.sessionKey = sessionKey;
-        testMain.IP = this.IP.replace("/","");
+        Main.IP = this.IP.replace("/","");
         sessionFinished =true;
     }
 

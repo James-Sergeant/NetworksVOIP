@@ -1,43 +1,77 @@
 package com;
 
-import audioLayer.AudioUtils;
+import securityLayer.SecurityLayer;
+import securityLayer.encryption.XOR;
+import securityLayer.session.Session;
 import utils.Analyzer;
 import voipLayer.Receiver;
 import voipLayer.Sender;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Locale;
+import java.util.Scanner;
 
 public class Main {
-    /**
-     * TODO: LOWEST DELAY FOR SOCKET 1
-     * TODO: QUALITY SOCKET 2
-     * TODO: QUALITY SOCKET 3
-     * TODO: ENCRYPT AUDIO & PLAY
-     * TODO: DECRYPT AUDIO & PLAY
-     *
-     * TODO: SHOW BEST SYSTEM FOR EACH DATAGRAMSOCKET
-     * TODO: 10 MINUTE
-     *
-     * TODO: ASKED TO COUNT DIGITS "ONE TWO THREE FOUR"
-     * TODO: PLAY THROUGH
-     */
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_BLUE = "\u001B[34m";
 
-    // IP ADDRESSES
+    public static String IP= "";
+    private static final Scanner scanner = new Scanner(System.in);
+
     public static final String SERGEANT_IP = "109.147.42.239";
     public static final String BURLING_IP = "86.154.116.23";
-    private static final int CALL_LENGTH = 10; // Time in seconds
 
-    public static void main(String[] args) throws LineUnavailableException, IOException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException, LineUnavailableException {
+        System.setErr(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+            }
+        }));
+        //Takes in the user input for the system.
+        int i = 0;
+        for(String arg: args){
+            if(arg.equals("-ip")){
+                IP = args[i+1];
+                if(IP.equals("b")){
+                    IP = BURLING_IP;
+                }
+                if (IP.equals("s")){
+                    IP=SERGEANT_IP;
+                }
+            }else if(arg.equals("-s")){
+                String x = args[i+1];
+                for(Config.PRESET preset: Config.PRESET.values()){
+                    if(x.toUpperCase(Locale.ROOT).equals(preset.name())){
+                        Config.preset = preset;
+                        break;
+                    }
+                }
+            }
+            i++;
+        }
 
-        Config.preset = Config.PRESET.SOCKET2;
+        if(IP.toLowerCase(Locale.ROOT).equals("localhost")){
+            SecurityLayer.xor = new XOR(XOR.generateSessionKey());
+            runVOIP(IP);
+        }else if(IP.equals("")){
+            new Session();
+            runVOIP(IP);
+        }else{
+            new Session(IP);
+            runVOIP(IP);
+        }
+    }
 
-        Analyzer.setup(false); // Setup static Analyser
-
+    private static void runVOIP(String senderIP) throws InterruptedException, SocketException, UnknownHostException, LineUnavailableException {
+        System.out.println(ANSI_GREEN+"Connection Established, running VOIP system!"+ANSI_RESET);
         // Create Receiver & Sender
-        Sender sender = new Sender();
+        Sender sender = new Sender(senderIP);
         Receiver receiver = new Receiver();
 
         // Create Threads
@@ -47,18 +81,16 @@ public class Main {
         // Start Threads
         receiverThread.start();
         senderThread.start();
+        String exit = "";
 
-        // Wait until Threads finish (after CALL_LENGTH ms)
-        Thread.sleep(CALL_LENGTH * 1000);
+        while(!(exit.toLowerCase(Locale.ROOT).equals("exit"))) exit = scanner.nextLine();
 
         sender.toggleSending();
         receiver.toggleReceiving();
 
         receiverThread.join();
         senderThread.join();
-
-        Analyzer.close(); // Safely close static Analyzer
-
-        System.out.println("Call Ended after "+ CALL_LENGTH+" seconds");
+        System.out.println(ANSI_BLUE+"Connection Closed, Goodbye!"+ANSI_RESET);
     }
 }
+
