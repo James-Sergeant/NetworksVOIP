@@ -9,7 +9,7 @@ public class SessionSender {
     private final DatagramSocket SOCKET;
 
     public SessionSender(String IP, byte[] data) throws IOException {
-        this.IP = InetAddress.getByName(IP);
+        this.IP = InetAddress.getByName(IP.replace("/",""));
         SOCKET = new DatagramSocket();
         DatagramPacket dp = new DatagramPacket(data,data.length,this.IP,PORT);
         SOCKET.send(dp);

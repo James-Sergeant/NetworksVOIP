@@ -8,7 +8,7 @@ import java.net.SocketException;
 public class SessionReceiver implements Runnable {
 
     public static final int PORT = 55555;
-    public static final int PACKET_SIZE = 9;
+    public static final int PACKET_SIZE = 64;
 
     public boolean receiving;
 

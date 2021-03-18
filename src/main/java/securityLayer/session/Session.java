@@ -21,7 +21,7 @@ public class Session {
     //Session keys:
     public static final byte SESSION_KEY = 2;
     //Packet Size:
-    public static final int PACKET_SIZE = 9;
+    public static final int PACKET_SIZE = 64;
 
     public boolean sessionFinished = false;
 
@@ -122,6 +122,7 @@ public class Session {
                 //Handel incoming packet:
                 DatagramPacket packet = sessionReceiver.getNewPacket();
                 byte[] payload = packet.getData();
+                Utils.printByteArray(payload);
                 IP = packet.getAddress().toString();
                 //Decide what type of request it is:
                 byte head = payload[0];
@@ -172,7 +173,7 @@ public class Session {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new Session(BURLING_IP);
+        new Session();
     }
 
 }

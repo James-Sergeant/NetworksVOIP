@@ -71,7 +71,7 @@ public class RSA {
     public BigInteger decrypt(String message){
         String[] encryptedDigits = message.split(",");
         String plaintext = "";
-        for(int i = 0; i < encryptedDigits.length; i++){
+        for(int i = 0; i < encryptedDigits.length-1; i++){
             int digit = Integer.parseInt(encryptedDigits[i]);
 
             // converting float value of c to BigInteger
