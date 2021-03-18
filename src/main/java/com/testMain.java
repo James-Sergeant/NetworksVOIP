@@ -2,26 +2,38 @@ package com;
 
 import securityLayer.SecurityLayer;
 import securityLayer.encryption.XOR;
+import securityLayer.session.Session;
 import utils.Analyzer;
 import voipLayer.Receiver;
 import voipLayer.Sender;
 
 import javax.sound.sampled.LineUnavailableException;
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class testMain {
-    private static String IP;
-    private static Scanner scanner = new Scanner(System.in);
-    public static void main(String[] args) throws InterruptedException, UnknownHostException, LineUnavailableException, SocketException {
+    public static String IP= "";
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static final String SERGEANT_IP = "109.147.42.239";
+    public static final String BURLING_IP = "86.154.116.23";
+
+    public static void main(String[] args) throws InterruptedException, IOException, LineUnavailableException {
 
         //Takes in the user input for the system.
         int i = 0;
         for(String arg: args){
             if(arg.equals("-ip")){
                 IP = args[i+1];
+                if(IP.equals("b")){
+                    IP = BURLING_IP;
+                }
+                if (IP.equals("s"){
+                    IP=SERGEANT_IP;
+                }
             }else if(arg.equals("-s")){
                 String x = args[i+1];
                 for(Config.PRESET preset: Config.PRESET.values()){
@@ -37,8 +49,12 @@ public class testMain {
         if(IP.toLowerCase(Locale.ROOT).equals("localhost")){
             SecurityLayer.sessionKey = XOR.generateSessionKey();
             runVOIP(IP);
+        }else if(IP.equals("")){
+            new Session();
+            runVOIP(IP);
         }else{
-
+            new Session(IP);
+            runVOIP(IP);
         }
     }
 

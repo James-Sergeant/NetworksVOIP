@@ -1,5 +1,6 @@
 package securityLayer.session;
 
+import com.testMain;
 import securityLayer.SecurityLayer;
 import securityLayer.encryption.RSA;
 import securityLayer.encryption.XOR;
@@ -39,7 +40,7 @@ public class Session {
 
     private String IP;
 
-    Session() throws SocketException, InterruptedException {
+    public Session() throws SocketException, InterruptedException {
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -48,7 +49,7 @@ public class Session {
         receiverThread.start();
         sessionReceiver();
     }
-    Session(String IP) throws IOException, InterruptedException {
+    public Session(String IP) throws IOException, InterruptedException {
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -178,6 +179,7 @@ public class Session {
         int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
         this.sessionKey = sessionKey;
         System.out.println(sessionKey);
+        testMain.IP = this.IP.replace("/","");
         sessionFinished =true;
     }
 
