@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import static com.Main.BURLING_IP;
 
@@ -102,8 +103,8 @@ public class Session {
         int key = XOR.generateSessionKey();
         System.out.println("Ket sent: "+key);
         System.out.println("Public Key: "+receiverPublicKey);
-        double encryptedKey = RSA.encrypt(key,receiverPublicKey);
-        byte[] keyBytes = ByteBuffer.allocate(Double.BYTES).putDouble(encryptedKey).array();
+        String encryptedKey = RSA.encrypt(key,receiverPublicKey);
+        byte[] keyBytes = encryptedKey.getBytes(StandardCharsets.US_ASCII);
         byte[] payload = new byte[PACKET_SIZE];
         payload[0] = SESSION_KEY;
         System.arraycopy(keyBytes,0,payload,1,keyBytes.length);
@@ -143,8 +144,8 @@ public class Session {
     }
 
     private void handlePublicKeyRequest(){
-        byte[] n = ByteBuffer.allocate(4).putInt(localPublicKey.getN()).array();
-        byte[] e = ByteBuffer.allocate(4).putInt(localPublicKey.getExponent()).array();
+        byte[] n = ByteBuffer.allocate(4).putInt(localPublicKey.getN().intValue()).array();
+        byte[] e = ByteBuffer.allocate(4).putInt(localPublicKey.getExponent().intValue()).array();
         byte[] payload = new byte[PACKET_SIZE];
         //Set the head to identify a response.
         payload[0] = PUBLIC_KEY_RESPONSE;
@@ -159,9 +160,10 @@ public class Session {
         }
     }
     private void handleSessionKey(byte[] payload){
-        byte[] data = new byte[PACKET_SIZE -1];
+        byte[] data = new byte[payload.length-1];
         System.arraycopy(payload,1,data,0,data.length);
-        double encryptedSessionKey = ByteBuffer.wrap(data).getDouble();
+        String encryptedSessionKey = new String(data);
+        System.out.println("RECIEVED ENCRYPED: "+encryptedSessionKey);
         int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
         this.sessionKey = sessionKey;
         System.out.println(sessionKey);

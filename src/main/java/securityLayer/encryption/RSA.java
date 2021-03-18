@@ -1,7 +1,10 @@
 package securityLayer.encryption;
 
+import securityLayer.session.Session;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.SocketException;
 import java.util.Random;
 /**
  * <h1>RSA Class</h1>
@@ -19,26 +22,28 @@ import java.util.Random;
  *  -Explanation of RSA with examples @link https://www.geeksforgeeks.org/java-program-to-implement-the-rsa-algorithm/
  */
 public class RSA {
-    private int p=0,q=0, n, z, d = 0, e, i;
+    private BigInteger p=new BigInteger("0"),q=new BigInteger("0"), n, z, d = new BigInteger("0"), e, i, one=new BigInteger("1");
 
-    public final KeyPair publicKey;
+    public KeyPair publicKey;
 
 
     /**
      * Generates a new instance of RSA with key pairs.
      */
     public RSA(){
-        // Finds two independent probable primes p and q
-        findBigPrime(10);
-        //n is the product of the two primes.
-        n = p * q;
-        //The Euler Phi Function
-        z = (p - 1) * (q - 1);
-        // finds e, the public key exponent.
-        findPublicExponent();
-        publicKey = new KeyPair(e,n);
-        // finds d, the private exponent.
-        findPrivateExponent();
+        while(d.intValue() == 0) {
+            // Finds two independent probable primes p and q
+            findBigPrime(10);
+            //n is the product of the two primes.
+            n = p.multiply(q);
+            //The Euler Phi Function
+            z = (p.subtract(one)).multiply(q.subtract(one));
+            // finds e, the public key exponent.
+            findPublicExponent();
+            publicKey = new KeyPair(e, n);
+            // finds d, the private exponent.
+            findPrivateExponent();
+        }
     }
 
     /**
@@ -47,8 +52,15 @@ public class RSA {
      * @param keyPair keyPair: The public keypair of the other user.
      * @return Double: The encrypted value of the message.
      */
-    public static double encrypt(int message, KeyPair keyPair){
-        return (Math.pow(message, keyPair.getExponent())) % keyPair.getN();
+    public static String encrypt(int message, KeyPair keyPair){
+        String cipher = "";
+        String s = String.valueOf(message);
+        for(int i = 0; i < s.length(); i++){
+            int digit = Integer.parseInt(s.substring(i,i+1));
+
+            cipher += (int) ((Math.pow(digit, keyPair.getExponent().intValue())) % keyPair.getN().intValue())+",";
+        }
+        return cipher;
     }
 
     /**
@@ -56,12 +68,17 @@ public class RSA {
      * @param message double the message to be decrypted.
      * @return BigInteger: The original value of the message.
      */
-    public BigInteger decrypt(double message){
-        // converting int value of n to BigInteger
-        BigInteger N = BigInteger.valueOf(n);
-        // converting float value of c to BigInteger
-        BigInteger C = BigDecimal.valueOf(message).toBigInteger();
-        return  (C.pow(d)).mod(N);
+    public BigInteger decrypt(String message){
+        String[] encryptedDigits = message.split(",");
+        String plaintext = "";
+        for(int i = 0; i < encryptedDigits.length; i++){
+            int digit = Integer.parseInt(encryptedDigits[i]);
+
+            // converting float value of c to BigInteger
+            BigInteger C = BigDecimal.valueOf(digit).toBigInteger();
+            plaintext += (C.pow(d.intValue())).mod(n);
+        }
+        return new BigInteger(plaintext);
     }
 
     /**
@@ -69,12 +86,12 @@ public class RSA {
      * @param size the size of the big primes in bits, 8 bit maximum due to int restrictions.
      */
     private void findBigPrime(int size){
-        while (p == q) {
+        while (p.equals(q)) {
             // 1st prime number p
-            p = BigInteger.probablePrime(size, new Random()).intValue();
+            p = BigInteger.probablePrime(size, new Random());
 
             // 2nd prime number q
-            q = BigInteger.probablePrime(2*size/3, new Random()).intValue();
+            q = BigInteger.probablePrime(size, new Random());
         }
     }
 
@@ -82,10 +99,9 @@ public class RSA {
      * Finds the exponent for the public key e such that: -1 < e < Φ(n).
      */
     private void findPublicExponent(){
-        for (e = 2; e < z; e++) {
-
+        for (e = new BigInteger("2"); e.intValue() < z.intValue(); e = e.add(one)) {
             // e is for public key exponent
-            if (gcd(e, z) == 1) {
+            if (gcd(e.intValue(), z.intValue()) == 1) {
                 break;
             }
         }
@@ -95,12 +111,12 @@ public class RSA {
      * Finds the private key exponent d such that d = (x*Φ(n) + 1) / e, for some value x.
      */
     private void findPrivateExponent(){
-        for (i = 0; i <= 9; i++) {
-            int x = 1 + (i * z);
+        for (i = new BigInteger("0"); i.intValue() <= 9; i = i.add(one)) {
+            BigInteger x = (i.multiply(z)).add(one);
 
             // d is for private key exponent
-            if (x % e == 0) {
-                d = x / e;
+            if (x.mod(e).intValue() == 0) {
+                d = x.divide(e);
                 break;
             }
         }
@@ -124,30 +140,35 @@ public class RSA {
      * A class used to store a key pair.
      */
     public static class KeyPair {
-        private int Exponent;
-        private int n;
+        private BigInteger Exponent;
+        private BigInteger n;
 
         /**
          * Creates a new keypair value.
          * @param Exponent int the exponent.
          * @param n int the n value.
          */
-        public KeyPair(int Exponent, int n){
+        public KeyPair(BigInteger Exponent, BigInteger n){
             this.Exponent = Exponent;
             this.n = n;
+        }
+
+        public KeyPair(int Exponent, int n){
+            this.Exponent = new BigInteger(Integer.toString(Exponent));
+            this.n = new BigInteger(Integer.toString(n));
         }
 
         /**
          * @return The value of the exponent.
          */
-        public int getExponent() {
+        public BigInteger getExponent() {
             return Exponent;
         }
 
         /**
          * @return The value of n.
          */
-        public int getN() {
+        public BigInteger getN() {
             return n;
         }
 
@@ -165,15 +186,23 @@ public class RSA {
      * @param args
      */
     public static void main(String[] args) {
-        int msg = BigInteger.probablePrime(8, new Random()).intValue();;
-        System.out.println(msg);
-        RSA rsa = new RSA();
-        System.out.println("P: "+rsa.p);
-        System.out.println("Q: "+rsa.q);
-        System.out.println(Math.abs(rsa.p-rsa.q));
-        double encryptedMsg = rsa.encrypt(msg,rsa.publicKey);
-        System.out.println(encryptedMsg);
-        System.out.println(rsa.decrypt(encryptedMsg));
+        for(int i = 0; i < 100; i++) {
+            int msg = XOR.generateSessionKey();//BigInteger.probablePrime(31, new Random()).intValue();
+            RSA rsa = new RSA();
+            String encryptedMsg = rsa.encrypt(msg, rsa.publicKey);
+            int decryptedMsg = rsa.decrypt(encryptedMsg).intValue();
 
+            System.out.println("MESSAGE:   " + msg);
+            if(msg != decryptedMsg) {
+                System.out.println("P: " + rsa.p);
+                System.out.println("Q: " + rsa.q);
+                System.out.println("N: " + rsa.n);
+                System.out.println("Z: " + rsa.z);
+                System.out.println("E: " + rsa.e);
+                System.out.println("D: " + rsa.d);
+                System.out.println("ENCRYPTED: " + encryptedMsg);
+            }
+            System.out.println("DECRYPTED: " + rsa.decrypt(encryptedMsg));
+        }
     }
 }
