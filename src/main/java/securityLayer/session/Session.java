@@ -41,6 +41,7 @@ public class Session {
     private String IP;
 
     public Session() throws SocketException, InterruptedException {
+        System.out.println("Receiver session started...");
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -49,8 +50,10 @@ public class Session {
         receiverThread.start();
         sessionReceiver();
         SecurityLayer.xor = new XOR(sessionKey);
+        System.out.println("Using session key: "+sessionKey);
     }
     public Session(String IP) throws IOException, InterruptedException {
+        System.out.println("Sender session started...");
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -60,6 +63,7 @@ public class Session {
         this.IP = IP;
         sessionInitiator();
         SecurityLayer.xor = new XOR(sessionKey);
+        System.out.println("Using session key: "+sessionKey);
     }
     //Sender Side:
     private void sessionInitiator() throws IOException {
@@ -69,7 +73,6 @@ public class Session {
         boolean keyReceived = false;
         while (!keyReceived){
             if(sessionReceiver.isNewPacket()){
-                System.out.println("Key Received!");
                 setReceiverPublicKey(sessionReceiver.getNewPacket());
                 keyReceived = true;
             }
@@ -90,6 +93,7 @@ public class Session {
     }
 
     private void sendPublicKeyRequest() throws IOException {
+        System.out.println("Sending pubic key request...");
         // Create the packet with the request header:
         byte[] payload = new byte[PACKET_SIZE];
         payload[0] = PUBLIC_KEY_REQUEST;
@@ -98,6 +102,7 @@ public class Session {
     }
 
     private void setReceiverPublicKey(DatagramPacket packet){
+        System.out.println("Received public key!");
         byte[] data = packet.getData();
         byte[] n = new byte[Integer.BYTES];
         byte[] e =new byte[Integer.BYTES];
@@ -111,17 +116,14 @@ public class Session {
     }
 
     private void sendSessionKey() throws IOException {
+        System.out.println("Sending session key...");
         int key = XOR.generateSessionKey();
         sessionKey = key;
-        System.out.println("Ket sent: "+key);
-        System.out.println("Public Key: "+receiverPublicKey);
         String encryptedKey = RSA.encrypt(key,receiverPublicKey);
         byte[] keyBytes = encryptedKey.getBytes(StandardCharsets.US_ASCII);
         byte[] payload = new byte[keyBytes.length+1];
         payload[0] = SESSION_KEY;
         System.arraycopy(keyBytes,0,payload,1,keyBytes.length);
-        System.out.println("Session Key payload: ");
-        Utils.printByteArray(payload);
         new SessionSender(IP,payload);
     }
 
@@ -133,7 +135,6 @@ public class Session {
                 //Handel incoming packet:
                 DatagramPacket packet = sessionReceiver.getNewPacket();
                 byte[] payload = packet.getData();
-                Utils.printByteArray(payload);
                 IP = packet.getAddress().toString();
                 //Decide what type of request it is:
                 byte head = payload[0];
@@ -157,6 +158,7 @@ public class Session {
     }
 
     private void handlePublicKeyRequest(){
+        System.out.println("Public key request received!");
         byte[] n = ByteBuffer.allocate(4).putInt(localPublicKey.getN().intValue()).array();
         byte[] e = ByteBuffer.allocate(4).putInt(localPublicKey.getExponent().intValue()).array();
         byte[] payload = new byte[PACKET_SIZE];
@@ -171,8 +173,10 @@ public class Session {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+        System.out.println("Public key sent...");
     }
     private void handleSessionKey(byte[] payload){
+        System.out.println("Session key received!");
         byte[] data = new byte[payload.length-1];
         System.arraycopy(payload,1,data,0,data.length);
         String encryptedSessionKey = new String(data);
