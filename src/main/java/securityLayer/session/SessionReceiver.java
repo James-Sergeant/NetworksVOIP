@@ -30,7 +30,6 @@ public class SessionReceiver implements Runnable {
     @Override
     public void run() {
         receiving = true;
-        System.out.println("Listening for Session Packet");
         while (receiving){
             try {
                 RECEIVER_SOCKET.receive(PACKET);

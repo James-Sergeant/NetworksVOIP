@@ -82,9 +82,6 @@ public class Sender implements Runnable{
      */
     @Override
     public void run() {
-        System.out.println("Running Sender...");
-
-        int i = 0;
 
         while(sending){
             DatagramPacket packet = createPacket();

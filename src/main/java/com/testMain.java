@@ -15,6 +15,9 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class testMain {
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+
     public static String IP= "";
     private static final Scanner scanner = new Scanner(System.in);
 
@@ -59,6 +62,7 @@ public class testMain {
     }
 
     private static void runVOIP(String senderIP) throws InterruptedException, SocketException, UnknownHostException, LineUnavailableException {
+        System.out.println(ANSI_GREEN+"Connection Established, running VOIP system!"+ANSI_RESET);
         // Create Receiver & Sender
         Sender sender = new Sender(senderIP);
         Receiver receiver = new Receiver();

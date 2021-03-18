@@ -13,7 +13,6 @@ public class SessionSender {
         SOCKET = new DatagramSocket();
         DatagramPacket dp = new DatagramPacket(data,data.length,this.IP,PORT);
         SOCKET.send(dp);
-        System.out.println("Session Packet Sent");
         SOCKET.close();
     }
 }

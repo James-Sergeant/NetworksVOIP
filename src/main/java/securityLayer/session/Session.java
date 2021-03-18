@@ -17,6 +17,11 @@ import static com.Main.BURLING_IP;
 import static com.Main.SERGEANT_IP;
 
 public class Session {
+    //Colour codes:
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
     //Public keys:
     public static final byte PUBLIC_KEY_REQUEST = 0;
     public static final byte PUBLIC_KEY_RESPONSE = 1;
@@ -41,7 +46,7 @@ public class Session {
     private String IP;
 
     public Session() throws SocketException, InterruptedException {
-        System.out.println("Receiver session started...");
+        System.out.println(ANSI_BLUE+"Receiver session started..."+ANSI_RESET);
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -53,7 +58,7 @@ public class Session {
         System.out.println("Using session key: "+sessionKey);
     }
     public Session(String IP) throws IOException, InterruptedException {
-        System.out.println("Sender session started...");
+        System.out.println(ANSI_BLUE+"Sender session started..."+ANSI_RESET);
         rsa = new RSA();
         localPublicKey = rsa.publicKey;
         sessionReceiver = new SessionReceiver();
@@ -93,7 +98,7 @@ public class Session {
     }
 
     private void sendPublicKeyRequest() throws IOException {
-        System.out.println("Sending pubic key request...");
+        System.out.println(ANSI_YELLOW+"[>] "+ANSI_RESET+"Sending pubic key request...");
         // Create the packet with the request header:
         byte[] payload = new byte[PACKET_SIZE];
         payload[0] = PUBLIC_KEY_REQUEST;
@@ -102,7 +107,7 @@ public class Session {
     }
 
     private void setReceiverPublicKey(DatagramPacket packet){
-        System.out.println("Received public key!");
+        System.out.println(ANSI_GREEN+"[<] "+ANSI_RESET+"Received public key!");
         byte[] data = packet.getData();
         byte[] n = new byte[Integer.BYTES];
         byte[] e =new byte[Integer.BYTES];
@@ -116,7 +121,7 @@ public class Session {
     }
 
     private void sendSessionKey() throws IOException {
-        System.out.println("Sending session key...");
+        System.out.println(ANSI_YELLOW+"[>] "+ANSI_RESET+"Sending session key...");
         int key = XOR.generateSessionKey();
         sessionKey = key;
         String encryptedKey = RSA.encrypt(key,receiverPublicKey);
@@ -158,7 +163,7 @@ public class Session {
     }
 
     private void handlePublicKeyRequest(){
-        System.out.println("Public key request received!");
+        System.out.println(ANSI_GREEN+"[<] "+ANSI_RESET+"Public key request received!");
         byte[] n = ByteBuffer.allocate(4).putInt(localPublicKey.getN().intValue()).array();
         byte[] e = ByteBuffer.allocate(4).putInt(localPublicKey.getExponent().intValue()).array();
         byte[] payload = new byte[PACKET_SIZE];
@@ -173,17 +178,15 @@ public class Session {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        System.out.println("Public key sent...");
+        System.out.println(ANSI_YELLOW+"[>] "+ANSI_RESET+"Public key sent...");
     }
     private void handleSessionKey(byte[] payload){
-        System.out.println("Session key received!");
+        System.out.println(ANSI_GREEN+"[<] "+ANSI_RESET+"Session key received!");
         byte[] data = new byte[payload.length-1];
         System.arraycopy(payload,1,data,0,data.length);
         String encryptedSessionKey = new String(data);
-        System.out.println("RECEIVED ENCRYPTED: "+encryptedSessionKey);
         int sessionKey = rsa.decrypt(encryptedSessionKey).intValue();
         this.sessionKey = sessionKey;
-        System.out.println(sessionKey);
         testMain.IP = this.IP.replace("/","");
         sessionFinished =true;
     }
