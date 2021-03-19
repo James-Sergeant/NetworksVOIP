@@ -93,6 +93,8 @@ public class Main {
         receiverThread.join();
         senderThread.join();
         System.out.println(ANSI_BLUE+"Connection Closed, Goodbye!"+ANSI_RESET);
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }
 
