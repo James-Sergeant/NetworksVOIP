@@ -1,32 +1,28 @@
 import sys
 import matplotlib.pyplot as plt
 
-def main():
-    # OPEN FILE
-    file_path = sys.argv[1]
-    file_path2 = sys.argv[2]
+def getDataFromFile(file_path):
     file = open(file_path, "r")
     file_lines = file.readlines()
-
-    file2 = open(file_path2, "r")
-    file_lines2 = file2.readlines()
-
-    # ADD ALL CONTENTS TO VIEWING HISTORY OBJECT
     samples = []
-    samples2 = []
-
     for sample in file_lines:
         samples.append(int(sample))
+    return samples
 
-    for sample in file_lines2:
-        samples2.append(int(sample))
+def main():
+
+    data = []
+
+    for arg in sys.argv[1:]:
+        data.append(getDataFromFile(arg))
 
     plt.xlabel('Time')
     plt.ylabel('Amplitude')
-    #plt.axis([0, number, -32000, 20])
-    plt.plot(samples, color='red')
-    plt.plot(samples2, color='blue')
-    plt.axline((0, 0), (len(samples), 0), color='black')
+
+    for i,graph in enumerate(data):
+        plt.plot(graph, label=sys.argv[i+1])
+
+    plt.axhline(y=0, color='black')
 
     plt.legend()
     plt.show()
