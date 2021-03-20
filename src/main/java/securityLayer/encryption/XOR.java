@@ -33,7 +33,7 @@ public class XOR {
     }
 
     public static void main(String[] args) throws IOException {
-        int sessionKey = 2063682301;//generateSessionKey();
+        int sessionKey= 15; //2063682301;//generateSessionKey();
         XOR xor = new XOR(sessionKey);
         System.out.println(sessionKey);
 
