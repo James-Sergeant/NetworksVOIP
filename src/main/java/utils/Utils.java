@@ -57,7 +57,7 @@ public class Utils {
 
     public static void writeToFile(String fileName, String stringToWrite){
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(fileName + ".txt")));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data/"+fileName + ".txt")));
             writer.write(stringToWrite);
             writer.close();
         }catch (Exception e){
