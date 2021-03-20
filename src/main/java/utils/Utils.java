@@ -1,5 +1,11 @@
 package utils;
 
+import audioLayer.AudioUtils;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 public class Utils {
     /**
      * Method from https://stackoverflow.com/questions/4485128/how-do-i-convert-long-to-byte-and-back-in-java/29132118#29132118
@@ -46,5 +52,16 @@ public class Utils {
 
     public static short blockToShort(byte byte1, byte byte2){
         return (short) ( ((byte2 & 0xFF) << 8) | (byte1 & 0xFF));
+    }
+
+
+    public static void writeToFile(String fileName, String stringToWrite){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(fileName + ".txt")));
+            writer.write(stringToWrite);
+            writer.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

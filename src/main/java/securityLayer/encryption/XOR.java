@@ -49,12 +49,6 @@ public class XOR {
 
         System.out.println("Test Sound");
 
-        File encrypted = new File("encrypted.csv");
-        File decrypted = new File("decrypted.csv");
-
-        BufferedWriter writer1 = new BufferedWriter(new FileWriter(encrypted));
-        BufferedWriter writer2 = new BufferedWriter(new FileWriter(decrypted));
-
         String encryptedString = "";
         String decryptedString = "";
 
@@ -73,11 +67,7 @@ public class XOR {
 
             //AudioUtils.play(audio);
         }
-
-        writer1.write(encryptedString);
-        writer2.write(decryptedString);
-
-        writer1.close();
-        writer2.close();
+        Utils.writeToFile("encrypted", encryptedString);
+        Utils.writeToFile("decrypted", encryptedString);
     }
 }
