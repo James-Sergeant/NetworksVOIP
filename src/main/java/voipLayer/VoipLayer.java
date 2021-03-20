@@ -103,7 +103,7 @@ public class VoipLayer extends Layer {
         long packetTime = packetTimes[returnedPacketNumberIndex];
         double delay = ((System.nanoTime() - packetTime))*Math.pow(10,-6); // Delay in ms
 
-        //System.out.println("Delay: "+delay);
+        System.out.println(delay);
     }
 
     /**

@@ -6,7 +6,8 @@ import utils.Utils;
 import voipLayer.Interpolator;
 
 import javax.sound.sampled.LineUnavailableException;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 public class AudioUtils {
 
@@ -127,5 +128,15 @@ public class AudioUtils {
         }
 
         return avgAudio;
+    }
+
+    public static void printSamples(byte[] block, File file) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        String s = "";
+        for(int j = 0; j < 512; j+=2){
+            s+= (Utils.blockToShort(block[j], block[j+1]))+"\n";
+        }
+        writer.append(s);
+        writer.close();
     }
 }

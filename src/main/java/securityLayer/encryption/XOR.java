@@ -3,6 +3,10 @@ package securityLayer.encryption;
 import audioLayer.AudioUtils;
 import utils.Utils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -28,8 +32,8 @@ public class XOR {
         return unwrapEncrypt.array();
     }
 
-    public static void main(String[] args) {
-        int sessionKey = generateSessionKey();
+    public static void main(String[] args) throws IOException {
+        int sessionKey = 2063682301;//generateSessionKey();
         XOR xor = new XOR(sessionKey);
         System.out.println(sessionKey);
 
@@ -44,9 +48,36 @@ public class XOR {
         Utils.printByteArray(xor.encryptDecryptAudio(cypherText));
 
         System.out.println("Test Sound");
-        while (true){
+
+        File encrypted = new File("encrypted.csv");
+        File decrypted = new File("decrypted.csv");
+
+        BufferedWriter writer1 = new BufferedWriter(new FileWriter(encrypted));
+        BufferedWriter writer2 = new BufferedWriter(new FileWriter(decrypted));
+
+        String encryptedString = "";
+        String decryptedString = "";
+
+        for(int i = 0; i < 10/0.032; i++){
             byte[] audio = xor.encryptDecryptAudio(AudioUtils.record());
-            AudioUtils.play(xor.encryptDecryptAudio(audio));
+
+            for(int j = 0; j < 512; j+=2){
+                encryptedString += (Utils.blockToShort(audio[j], audio[j+1]))+"\n";
+            }
+
+            audio = xor.encryptDecryptAudio(audio);
+
+            for(int j = 0; j < 512; j+=2){
+                decryptedString += (Utils.blockToShort(audio[j], audio[j+1]))+"\n";
+            }
+
+            //AudioUtils.play(audio);
         }
+
+        writer1.write(encryptedString);
+        writer2.write(decryptedString);
+
+        writer1.close();
+        writer2.close();
     }
 }
