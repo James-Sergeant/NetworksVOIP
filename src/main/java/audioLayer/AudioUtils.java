@@ -2,12 +2,14 @@ package audioLayer;
 
 import CMPC3M06.AudioPlayer;
 import CMPC3M06.AudioRecorder;
+import com.google.common.io.Files;
 import utils.Utils;
 import voipLayer.Interpolator;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.*;
 import java.util.Scanner;
+import java.util.Vector;
 
 public class AudioUtils {
 
@@ -139,4 +141,23 @@ public class AudioUtils {
         writer.append(s);
         writer.close();
     }
+
+    public static void audioToFile(byte[] audio, File file){
+        try {
+            Files.write(audio, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static Vector<byte[]> audioFromFile(File file) throws IOException {
+        byte[] allData = Files.toByteArray(file);
+        Vector<byte[]> buffer = new Vector<>();
+        for(int i = 0; i < allData.length; i += 512){
+            byte[] temp = new byte[512];
+            System.arraycopy(allData,i,temp,0,512);
+            buffer.add(temp);
+        }
+        return buffer;
+    }
+
 }
