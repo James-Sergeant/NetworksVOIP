@@ -12,15 +12,19 @@ def getDataFromFile(file_path):
 def main():
 
     data = []
+    total = 0
 
-    for arg in sys.argv[1:]:
-        data.append(getDataFromFile(arg))
-
+    for i,arg in enumerate(getDataFromFile(sys.argv[1])):
+        if(i % 100 == 0 and i != 0):
+            data.append(total/100)
+            print(total/100)
+            total = 0
+        else:
+            total += arg
     plt.xlabel('Time')
     plt.ylabel('Amplitude')
-
-    for i,graph in enumerate(data):
-        plt.plot(graph, label=sys.argv[i+1])
+    
+    plt.plot(data)
 
     plt.axhline(y=0, color='black')
 

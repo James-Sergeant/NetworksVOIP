@@ -49,7 +49,7 @@ public class XOR {
         Utils.printByteArray(xor.encryptDecryptAudio(cypherText));
          */
         File test = new File("data/test");
-        /*
+        
         System.out.println("Save sound: ");
 
         byte[] sound = new byte[163328];
@@ -60,8 +60,8 @@ public class XOR {
 
 
         AudioUtils.audioToFile(sound, test);
-        */
 
+        /*
         String encryptedString = "";
         String decryptedString = "";
 

@@ -5,6 +5,7 @@ import com.Main;
 import securityLayer.SecurityLayer;
 import securityLayer.encryption.RSA;
 import securityLayer.encryption.XOR;
+import utils.Utils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -199,18 +200,27 @@ public class Session {
     public static void main(String[] args) throws IOException, InterruptedException {
         SessionReceiver receiver = new SessionReceiver();
         //Sender:
-        while (true) {
+        String s = "";
+        for(int i = 0; i < 10000; i++){
             SessionSender sender = new SessionSender(BURLING_IP, new byte[0]);
             long time = System.nanoTime();
             receiver.getPacket();
-            System.out.println(System.nanoTime() - time);
+            int val = (int) (Math.pow(10,-6)* (System.nanoTime() - time));
+            System.out.println(i);
+            if(val>10){
+                s += (val + "\n");
+            }
         }
-
+        Utils.writeToFile("pingTest",s);
+        /*
         //Receiver:
         while (true) {
             receiver.getPacket();
-            SessionSender sender1 = new SessionSender(SERGEANT_IP, new byte[0]);
+            SessionSender sender1 = new SessionSender(BURLING_IP, new byte[0]);
         }
+
+         */
+
     }
 
 }
