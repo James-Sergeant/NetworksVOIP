@@ -41,6 +41,15 @@ public class SessionReceiver implements Runnable {
         RECEIVER_SOCKET.close();
     }
 
+    public boolean getPacket(){
+        try {
+            RECEIVER_SOCKET.receive(PACKET);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     public DatagramPacket getNewPacket(){
         newPacket =false;
         return PACKET;

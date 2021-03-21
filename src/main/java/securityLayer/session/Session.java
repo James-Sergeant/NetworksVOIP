@@ -12,6 +12,9 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import static com.Main.BURLING_IP;
+import static com.Main.SERGEANT_IP;
+
 public class Session {
     //Colour codes:
     public static final String ANSI_RESET = "\u001B[0m";
@@ -194,7 +197,20 @@ public class Session {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new Session();
+        SessionReceiver receiver = new SessionReceiver();
+        //Sender:
+        while (true) {
+            SessionSender sender = new SessionSender(BURLING_IP, new byte[0]);
+            long time = System.nanoTime();
+            receiver.getPacket();
+            System.out.println(System.nanoTime() - time);
+        }
+
+        //Receiver:
+        while (true) {
+            receiver.getPacket();
+            SessionSender sender1 = new SessionSender(SERGEANT_IP, new byte[0]);
+        }
     }
 
 }
