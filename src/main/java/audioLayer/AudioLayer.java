@@ -60,10 +60,6 @@ public class AudioLayer extends Layer {
             // Get audio data from payload and add to the buffer
             extractHeader(audioBlock);
 
-            for(int j = 0; j < 512; j+=2){
-                System.out.println(Utils.blockToShort(header[j], header[j+1]));
-            }
-
             // Send audio data to Player
             AudioUtils.play(header);
             //AudioUtils.play(AudioUtils.removeLowerAudio(header));
