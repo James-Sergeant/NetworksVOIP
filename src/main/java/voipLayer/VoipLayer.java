@@ -37,7 +37,7 @@ public class VoipLayer extends Layer {
         header[0] = packetNumber++; // Add packet number to header
         header[1] = receivedPacketNumber; // Add last received packet number to header
 
-        System.out.println("SENDING: "+(packetNumber-1)+", "+packetTimes[intPacketNumber]);
+        //System.out.println("SENDING: "+(packetNumber-1)+", "+packetTimes[intPacketNumber]);
 
         return super.addHeader(payload);
     }
@@ -55,7 +55,7 @@ public class VoipLayer extends Layer {
         // Set other clients packet number
         prevReceivedPacketNumber = receivedPacketNumber;
         receivedPacketNumber = header[0];
-        System.out.println("Header: "+header[1]+", "+getPacketTimeIndex(header[1]));
+        //System.out.println("Header: "+header[1]+", "+getPacketTimeIndex(header[1]));
 
         // ADD TO BUFFER
         BUFFER.insertBlock(getPacketTimeIndex(receivedPacketNumber), super.removeHeader(payload));
@@ -107,10 +107,10 @@ public class VoipLayer extends Layer {
         // Calculate Delay between sending and receiving packet.
         long packetTime = packetTimes[returnedPacketNumberIndex];
         double delay = ((System.nanoTime() - packetTime))*Math.pow(10,-6); // Delay in ms
-        System.out.println("Time: "+System.nanoTime());
-        System.out.println(returnedPacketNumberIndex+" : "+delay);
-        System.out.println("Time Sent: "+packetTime);
-        System.out.println();
+        //System.out.println("Time: "+System.nanoTime());
+        ////System.out.println(returnedPacketNumberIndex+" : "+delay);
+        //System.out.println("Time Sent: "+packetTime);
+        //System.out.println();
     }
 
     /**
