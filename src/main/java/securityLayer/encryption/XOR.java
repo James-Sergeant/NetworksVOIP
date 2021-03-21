@@ -92,13 +92,13 @@ public class XOR {
                 encryptedString += (Utils.blockToShort(audio[j], audio[j+1]))+"\n";
             }
 
-            audio = xor.encryptDecryptAudio(audio);
+           // audio = xor.encryptDecryptAudio(audio);
 
             for(int j = 0; j < 512; j+=2){
                 decryptedString += (Utils.blockToShort(audio[j], audio[j+1]))+"\n";
             }
 
-            //AudioUtils.play(audio);
+            AudioUtils.play(audio);
         }
         Utils.writeToFile("encrypted", encryptedString);
         Utils.writeToFile("decrypted", decryptedString);
