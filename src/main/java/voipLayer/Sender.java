@@ -1,14 +1,17 @@
 package voipLayer;
 
 import audioLayer.AudioLayer;
+import audioLayer.AudioUtils;
 import com.Config;
 import securityLayer.SecurityLayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
 
 import javax.sound.sampled.LineUnavailableException;
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
+import java.util.Vector;
 
 public class Sender implements Runnable{
 
@@ -82,9 +85,11 @@ public class Sender implements Runnable{
      */
     @Override
     public void run() {
-
-        while(sending){
-            DatagramPacket packet = createPacket();
+        File test = new File("data/test");
+        Vector<byte[]> playback = AudioUtils.audioFromFile(test);
+        int i = 0;
+        while(i < playback.size()){
+            DatagramPacket packet = createPacket(playback.get(i++));
             try {
                 if(Config.preset.isINTERLEAVER()){
                     DatagramPacket packetToSend = interleaver.popPacket();
@@ -106,6 +111,16 @@ public class Sender implements Runnable{
         sending ^= true;
     }
 
+    private DatagramPacket createPacket(byte[] audio){
+        // Create Payload Buffer
+        byte[] payload = new byte[0];
+
+        payload = audio;
+        payload = securitylayer.addHeader(payload);
+        payload = voipLayer.addHeader(payload);
+
+        return new DatagramPacket(payload, payload.length,IP,PORT);
+    }
 
     private DatagramPacket createPacket(){
         // Create Payload Buffer

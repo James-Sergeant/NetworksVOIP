@@ -6,11 +6,11 @@ import time
 
 # What's your IP address and witch port should we use?
 recieve_host = '127.0.0.1'
-recieve_port = 12000
+recieve_port = 55555
 
 # What's the remote host's IP address and witch port should we use?
-remote_host = '127.0.0.1'
-remote_port = 1024
+remote_host = '109.147.42.239'
+remote_port = 55555
 
 # Create a UDP socket
 # Notice the use of SOCK_DGRAM for UDP packets
@@ -37,7 +37,7 @@ while True:
   message, address = serverSocket.recvfrom(remote_port)
   # Capitalize the message from the client
   message = message.upper()
-  print 'Recieve: ' + message
+  print('Recieve: ' + message)
   # If rand is less is than 4, we consider the packet lost and do not respond
   if sleep_for_rand_response_times:
     min_sleep = 0.2
@@ -45,11 +45,11 @@ while True:
     time.sleep(random.uniform(min_sleep, max_sleep))
     if simulate_packet_loss:
       if random.randint(0, 10) < 2:
-        print 'Dropped, lol'
+        print('Dropped, lol')
         continue
   elif simulate_packet_loss:
     if random.randint(0, 10) < 4:
-      print 'Dropped, lol'
+      print('Dropped, lol')
       continue
   serverSocket.sendto(message, address)
-  print 'Send: ' + message
+  print('Send: ' + message)

@@ -13,7 +13,7 @@ public class Config {
         XOR1(1,0.0,false,32,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true,false),
         XOR2(1,0.0,false,32,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, true,true),
 
-        CUSTOM1(2,1.0,true,32,1, Config.PACKET_LOSS_SOLUTION.REPETITION, false, 3, false,false);
+        CUSTOM1(3,1.0,false,32,1, Config.PACKET_LOSS_SOLUTION.BLANK_FILL_IN, false, 3, false,false);
 
         // DATAGRAM SOCKET
         private final int DATAGRAM_SOCKET; // 1, 2 or 3

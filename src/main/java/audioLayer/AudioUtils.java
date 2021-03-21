@@ -149,15 +149,20 @@ public class AudioUtils {
             e.printStackTrace();
         }
     }
-    public static Vector<byte[]> audioFromFile(File file) throws IOException {
-        byte[] allData = Files.toByteArray(file);
-        Vector<byte[]> buffer = new Vector<>();
-        for(int i = 0; i < allData.length; i += 512){
-            byte[] temp = new byte[512];
-            System.arraycopy(allData,i,temp,0,512);
-            buffer.add(temp);
+    public static Vector<byte[]> audioFromFile(File file){
+        try {
+            byte[] allData = Files.toByteArray(file);
+
+            Vector<byte[]> buffer = new Vector<>();
+            for(int i = 0; i < allData.length; i += 512){
+                byte[] temp = new byte[512];
+                System.arraycopy(allData,i,temp,0,512);
+                buffer.add(temp);
+            }
+            return buffer;
+        }catch (Exception e){
+            return null;
         }
-        return buffer;
     }
 
 }
